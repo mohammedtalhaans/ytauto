@@ -1,0 +1,7 @@
+{
+  "tool_name": "PowerShell",
+  "tool_input_preview": "{\"command\":\"cd \\\"C:\\\\Users\\\\Talha\\\\Documents\\\\yt automation\\\\ytauto\\\"; npm run build 2>&1\",\"description\":\"Build TypeScript\"}",
+  "error": "Exit code 2\n> ytauto@0.1.0 build\n> tsc -p tsconfig.json\n\nsrc/imagegen.ts(94,5): error TS2322: Type 'Dirent<string>[]' is not assignable to type 'Dirent<NonSharedBuffer>[]'.\r\n  Type 'Dirent<string>' is not assignable to type 'Dirent<NonSharedBuffer>'.\r\n    Type 'string' is not assignable to type 'NonSharedBuffer'.\r\nsrc/imagegen.ts(99,28): error TS2345: Argument of type 'NonSharedBuffer' is not assignable to parameter of type 'string'.",
+  "timestamp": "2026-05-08T17:41:50.523Z",
+  "retry_count": 1
+}

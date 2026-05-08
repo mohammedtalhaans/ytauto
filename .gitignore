@@ -1,0 +1,10 @@
+node_modules/
+dist/
+runway-profile/
+projects/*/segments/*.mp4
+projects/*/final.mp4
+projects/*/frames/*.png
+projects/*/artifacts/*.png
+debug-out/
+*.log
+.DS_Store
