@@ -72,6 +72,20 @@ export async function runGenerate(manifest: Manifest, options: GenerateOptions):
   options.log(`[generate] launching browser; ${pending.length} segment(s); concurrency=${Math.min(options.concurrency, pending.length)}`);
   const context = await launchContext(options.profileDir);
   try {
+    // Warm the persistent context. Empirically, the FIRST tab opened on a
+    // freshly-launched persistent context can't reliably submit a Generate
+    // click — Runway's React doesn't fully hydrate before the click goes out.
+    // Open a throwaway page, navigate, wait, close — so subsequent tabs find
+    // a "warm" context.
+    options.log("[generate] warming browser context (~45s) so first worker isn't cold");
+    const warmup = context.pages()[0] ?? await context.newPage();
+    await warmup.goto(options.generationUrl, { waitUntil: "domcontentloaded" }).catch(() => undefined);
+    await warmup.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => undefined);
+    await warmup.waitForTimeout(15000);
+    if (context.pages().length > 1) {
+      await warmup.close().catch(() => undefined);
+    }
+
     const results = await runPool(context, pending, options.concurrency, {
       generationUrl: options.generationUrl,
       generationTimeoutMs: options.generationTimeoutMs,

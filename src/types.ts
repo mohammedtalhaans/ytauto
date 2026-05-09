@@ -53,7 +53,7 @@ export const DEFAULT_DEFAULTS: Manifest["defaults"] = {
   aspect: "9:16",
   duration: 15,
   resolution: "1080p",
-  upscale: false
+  upscale: true
 };
 
 export const STAGE_ORDER: StageName[] = ["ideate", "artifacts", "frames", "generate", "stitch"];

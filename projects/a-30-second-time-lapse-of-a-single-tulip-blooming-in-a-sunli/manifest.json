@@ -1,0 +1,88 @@
+{
+  "slug": "a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli",
+  "idea": "a 30-second time-lapse of a single tulip blooming in a sunlit windowsill, no narration",
+  "title": "Tulip at the Window",
+  "logline": "A single tulip slowly opens across a quiet sunlit windowsill as daylight warms the room.",
+  "createdAt": "2026-05-08T18:53:40.356Z",
+  "updatedAt": "2026-05-09T00:12:56.781Z",
+  "defaults": {
+    "model": "seedance-2",
+    "aspect": "9:16",
+    "duration": 15,
+    "resolution": "1080p",
+    "upscale": false
+  },
+  "characters": [
+    {
+      "name": "tulip",
+      "description": "single red-pink tulip in a small clear glass vase, green stem and leaves, initially closed petals that gradually bloom open, delicate natural texture",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\artifacts\\character-tulip.png"
+    }
+  ],
+  "settings": [
+    {
+      "name": "windowsill",
+      "description": "simple white-painted windowsill in a calm room, morning sunlight streaming through clean glass, soft sheer curtain nearby, pale wall, gentle dust motes, quiet cinematic natural light",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\artifacts\\setting-windowsill.png"
+    }
+  ],
+  "segments": [
+    {
+      "name": "01-morning-unfurl",
+      "prompt": "Cinematic 15s time-lapse clip: a single red-pink tulip in a clear glass vase rests on a white sunlit windowsill, closed petals slowly loosening as warm morning light grows brighter, soft sheer curtain barely moving, dust motes drifting in natural light, realistic botanical detail, locked-off macro camera, shallow depth of field, peaceful visual rhythm. No subtitles, no captions, no visible text.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "tulip",
+        "windowsill"
+      ],
+      "firstFrameDescription": "close macro still of a closed red-pink tulip standing in a clear glass vase on a white windowsill, soft golden morning sunlight touching the petals, sheer curtain blurred in the background",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\frames\\01-morning-unfurl.png",
+      "videoStatus": "done",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\segments\\01-morning-unfurl.mp4"
+    },
+    {
+      "name": "02-full-bloom",
+      "prompt": "Cinematic 15s time-lapse clip: the same single tulip continues blooming on the same sunlit windowsill, petals opening wider into a graceful full bloom as sunlight shifts across the sill, the glass vase catching bright highlights, leaves subtly lifting, natural realistic motion, serene locked-off camera, warm afternoon glow, delicate shadows on the wall. No subtitles, no captions, no visible text.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "tulip",
+        "windowsill"
+      ],
+      "firstFrameDescription": "the same tulip half-open in its clear glass vase on the white windowsill, stronger sunlight spilling across the sill, soft petal shadows on the pale wall behind it",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\frames\\02-full-bloom.png",
+      "videoStatus": "done",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\segments\\02-full-bloom.mp4"
+    }
+  ],
+  "stages": {
+    "ideate": {
+      "status": "done",
+      "completedAt": "2026-05-08T18:54:06.714Z"
+    },
+    "artifacts": {
+      "status": "done",
+      "completedAt": "2026-05-08T18:59:07.002Z"
+    },
+    "frames": {
+      "status": "done",
+      "completedAt": "2026-05-08T19:00:48.457Z"
+    },
+    "generate": {
+      "status": "done",
+      "completedAt": "2026-05-09T00:12:55.907Z"
+    },
+    "stitch": {
+      "status": "done",
+      "completedAt": "2026-05-09T00:12:56.781Z"
+    }
+  },
+  "finalPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-30-second-time-lapse-of-a-single-tulip-blooming-in-a-sunli\\final.mp4"
+}

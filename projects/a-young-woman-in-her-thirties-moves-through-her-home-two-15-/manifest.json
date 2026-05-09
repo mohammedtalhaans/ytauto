@@ -1,0 +1,93 @@
+{
+  "slug": "a-young-woman-in-her-thirties-moves-through-her-home-two-15-",
+  "idea": "a young woman in her thirties moves through her home — two 15-second scenes with the same woman, scene one in a sunlit kitchen making tea, scene two in a cozy reading nook with a book, calm cinematic",
+  "title": "Quiet Light at Home",
+  "logline": "A calm cinematic portrait of a young woman moving through two peaceful corners of her home, from morning tea to a soft reading pause.",
+  "createdAt": "2026-05-09T00:35:58.939Z",
+  "updatedAt": "2026-05-09T01:08:11.280Z",
+  "defaults": {
+    "model": "seedance-2",
+    "aspect": "9:16",
+    "duration": 15,
+    "resolution": "1080p",
+    "upscale": false
+  },
+  "characters": [
+    {
+      "name": "woman",
+      "description": "young woman in her thirties, warm medium skin tone, shoulder-length dark brown hair loosely tucked behind one ear, calm thoughtful expression, natural makeup, soft cream knit cardigan over a simple linen top, delicate everyday jewelry",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\artifacts\\character-woman.png"
+    }
+  ],
+  "settings": [
+    {
+      "name": "kitchen",
+      "description": "sunlit modern home kitchen, pale wood cabinets, white ceramic tile, small herbs on the windowsill, kettle and ceramic teacup on a clean counter, golden morning light streaming through sheer curtains",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\artifacts\\setting-kitchen.png"
+    },
+    {
+      "name": "reading-nook",
+      "description": "cozy reading nook by a large window, cushioned armchair, soft woven blanket, small side table with tea, warm lamp glow mixed with late afternoon natural light, shelves of books in the background",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\artifacts\\setting-reading-nook.png"
+    }
+  ],
+  "segments": [
+    {
+      "name": "01-making-tea",
+      "prompt": "Cinematic 15s clip: the woman moves quietly through the sunlit kitchen, fills a kettle, selects a ceramic cup, and pours hot tea as steam curls through golden morning light. Gentle close-ups of hands, cup, and soft expression, slow natural handheld camera, realistic skin texture, calm domestic atmosphere. No subtitles, no captions, no visible text.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": false,
+      "refs": [
+        "woman",
+        "kitchen"
+      ],
+      "firstFrameDescription": "soft wide shot of the woman standing at the kitchen counter in golden morning light, one hand resting near a ceramic teacup, steam barely visible in the sunbeam",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\frames\\01-making-tea.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\segments\\01-making-tea.mp4",
+      "videoStatus": "done"
+    },
+    {
+      "name": "02-reading-nook",
+      "prompt": "Cinematic 15s clip: the same woman settles into the cozy reading nook with a book and her tea, draws the blanket over her lap, turns a page, and looks out the window for a peaceful breath before returning to the book. Warm natural light, shallow depth of field, intimate calm camera movement, realistic cinematic home interior. No subtitles, no captions, no visible text.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": false,
+      "refs": [
+        "woman",
+        "reading-nook"
+      ],
+      "firstFrameDescription": "medium shot of the woman curled into the cushioned armchair by the window, book open in her lap, cup of tea on the side table, soft blanket and warm light surrounding her",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\frames\\02-reading-nook.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\segments\\02-reading-nook.mp4",
+      "videoStatus": "done"
+    }
+  ],
+  "stages": {
+    "ideate": {
+      "status": "done",
+      "completedAt": "2026-05-09T00:36:30.778Z"
+    },
+    "artifacts": {
+      "status": "done",
+      "completedAt": "2026-05-09T00:39:30.754Z"
+    },
+    "frames": {
+      "status": "done",
+      "completedAt": "2026-05-09T00:41:31.663Z"
+    },
+    "generate": {
+      "status": "done",
+      "completedAt": "2026-05-09T01:08:10.722Z"
+    },
+    "stitch": {
+      "status": "done",
+      "completedAt": "2026-05-09T01:08:11.280Z"
+    }
+  },
+  "finalPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-young-woman-in-her-thirties-moves-through-her-home-two-15-\\final.mp4"
+}

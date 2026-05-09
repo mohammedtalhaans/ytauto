@@ -5,6 +5,12 @@ projects/*/segments/*.mp4
 projects/*/final.mp4
 projects/*/frames/*.png
 projects/*/artifacts/*.png
+projects/*/concat.txt
+projects/*/manifest.json.bak
+projects/*/debug-out/
 debug-out/
 *.log
 .DS_Store
+.omc/
+.omx/
+.claude/

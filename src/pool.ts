@@ -20,6 +20,17 @@ export async function runPool(
   const queue = [...jobs];
   const results: PoolResult[] = [];
 
+  const submitGapMs = 30 * 1000;
+  let earliestSlotMs = 0;
+  const acquireSubmissionSlot = async (tag: string): Promise<void> => {
+    const wait = Math.max(0, earliestSlotMs - Date.now());
+    if (wait > 0) {
+      log(`${tag} waiting ${Math.round(wait / 1000)}s for next submission slot`);
+      await new Promise<void>((resolve) => setTimeout(resolve, wait));
+    }
+    earliestSlotMs = Date.now() + submitGapMs;
+  };
+
   const worker = async (workerIndex: number): Promise<void> => {
     const tag = `[worker ${workerIndex + 1}]`;
     while (queue.length > 0) {
@@ -27,17 +38,33 @@ export async function runPool(
       if (!job) {
         return;
       }
-      const page = await context.newPage();
-      try {
-        log(`${tag} picked job ${job.name} (${queue.length} remaining)`);
-        const { output, sessionUrl } = await runJob(page, job, options, log);
-        results.push({ job, ok: true, output, sessionUrl });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        log(`${tag} job ${job.name} failed: ${message}`);
-        results.push({ job, ok: false, error: message, sessionUrl: page.url() });
-      } finally {
-        await page.close().catch(() => undefined);
+      log(`${tag} picked job ${job.name} (${queue.length} remaining)`);
+
+      const maxAttempts = 2;
+      let pushed = false;
+      let lastError: string | undefined;
+      let lastSessionUrl: string | undefined;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        await acquireSubmissionSlot(tag);
+        const page = await context.newPage();
+        try {
+          if (attempt > 1) {
+            log(`${tag} retry attempt ${attempt} for ${job.name}`);
+          }
+          const { output, sessionUrl } = await runJob(page, job, options, log);
+          results.push({ job, ok: true, output, sessionUrl });
+          pushed = true;
+          break;
+        } catch (error) {
+          lastError = error instanceof Error ? error.message : String(error);
+          lastSessionUrl = page.url();
+          log(`${tag} job ${job.name} attempt ${attempt} failed: ${lastError}`);
+        } finally {
+          await page.close().catch(() => undefined);
+        }
+      }
+      if (!pushed) {
+        results.push({ job, ok: false, error: lastError, sessionUrl: lastSessionUrl });
       }
     }
   };

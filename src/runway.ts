@@ -71,19 +71,23 @@ export async function runJob(
 ): Promise<{ output: string; sessionUrl: string }> {
   const tag = `[${job.name}]`;
   log(`${tag} starting`);
-  await page.goto(options.generationUrl, { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(1500);
+  await navigateUntilReady(page, options.generationUrl, log, tag);
   await openCustomVideoTool(page);
 
-  await configureModel(page, job.model);
-  await configureAspect(page, job.aspect);
-  await configureDuration(page, job.duration);
-  await configureResolution(page, job.resolution);
+  try {
+    await configureModel(page, job.model);
+    await configureAspect(page, job.aspect);
+    await configureDuration(page, job.duration);
+    await configureResolution(page, job.resolution);
+  } catch (error) {
+    await screenshot(page, options.debugDir, `${job.name}-configure-failed`);
+    throw error;
+  }
   await uploadReferences(page, job.refs);
   await fillPrompt(page, job.prompt);
 
   log(`${tag} clicking Generate`);
-  const accepted = await clickGenerateAndConfirm(page);
+  const accepted = await clickGenerateAndConfirm(page, options.debugDir, job.name);
   if (!accepted) {
     await screenshot(page, options.debugDir, `${job.name}-generate-not-accepted`);
     throw new Error(`Generate not accepted for job ${job.name}`);
@@ -123,22 +127,86 @@ export async function runJob(
   return { output: outPath, sessionUrl };
 }
 
-async function openCustomVideoTool(page: Page): Promise<void> {
-  if (await promptBox(page).count() > 0) {
-    return;
+async function navigateUntilReady(page: Page, generationUrl: string, log: (msg: string) => void, tag: string): Promise<void> {
+  // Sometimes Runway's home page hangs on initial render (loading spinner
+  // never resolves). Detect this by checking whether the prompt textbox or
+  // the Custom-tool's nav appears within a generous window. If not, reload
+  // and retry. Up to 4 attempts with full page reload.
+  const totalDeadline = Date.now() + 4 * 60 * 1000;
+  for (let attempt = 1; attempt <= 4 && Date.now() < totalDeadline; attempt++) {
+    if (attempt === 1) {
+      await page.goto(generationUrl, { waitUntil: "domcontentloaded" }).catch(() => undefined);
+    } else {
+      log(`${tag} page didn't become interactive — reload attempt ${attempt}`);
+      await page.reload({ waitUntil: "domcontentloaded" }).catch(() => undefined);
+    }
+    await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => undefined);
+    await page.waitForTimeout(3000);
+    // Ready signal: prompt box visible OR a sidebar Custom button visible.
+    const ready = await Promise.race([
+      promptBox(page).first().isVisible({ timeout: 1500 }).catch(() => false),
+      page.getByRole("button", { name: "Custom", exact: true }).first().isVisible({ timeout: 1500 }).catch(() => false),
+      page.getByText("Custom", { exact: true }).first().isVisible({ timeout: 1500 }).catch(() => false)
+    ]);
+    if (ready) {
+      return;
+    }
+    // Try forcing the team-tool URL on attempt 2+
+    if (attempt >= 2) {
+      const url = page.url();
+      const teamMatch = url.match(/\/teams\/([^/]+)\//);
+      if (teamMatch) {
+        const target = `https://app.runwayml.com/video-tools/teams/${teamMatch[1]}/ai-tools/generate?tool=video&mode=tools`;
+        await page.goto(target, { waitUntil: "domcontentloaded" }).catch(() => undefined);
+        await page.waitForTimeout(3000);
+      }
+    }
   }
-  await clickFirstVisible([
-    page.getByRole("button", { name: "Custom", exact: true }),
-    page.getByText("Custom", { exact: true })
-  ]).catch(() => undefined);
-  await page.waitForLoadState("domcontentloaded").catch(() => undefined);
-  await page.waitForTimeout(2500);
-  if (await promptBox(page).count() === 0) {
+  throw new Error(`Runway page never became interactive after navigation (gave up after attempts)`);
+}
+
+async function dismissOverlays(_page: Page): Promise<void> {
+  // Disabled: experimental click on overlay-dismiss buttons appeared to
+  // interfere with the Generate flow on the first worker. Re-enable only
+  // with very specific selectors if/when needed.
+}
+
+async function openCustomVideoTool(page: Page): Promise<void> {
+  await dismissOverlays(page);
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    if (await promptBox(page).count() > 0) {
+      return;
+    }
+    await clickFirstVisible([
+      page.getByRole("button", { name: "Custom", exact: true }),
+      page.getByText("Custom", { exact: true })
+    ]).catch(() => undefined);
+    await page.waitForLoadState("domcontentloaded").catch(() => undefined);
+    await page.waitForTimeout(2500);
+    if (await promptBox(page).count() > 0) {
+      return;
+    }
     await clickFirstVisible([
       page.getByLabel("Video", { exact: true }),
       page.getByText("Video", { exact: true })
     ]).catch(() => undefined);
     await page.waitForTimeout(2000);
+    if (await promptBox(page).count() > 0) {
+      return;
+    }
+    // Last-ditch on this attempt: navigate the URL hard with the right query params
+    const url = page.url();
+    const teamMatch = url.match(/\/teams\/([^/]+)\//);
+    if (teamMatch) {
+      const target = `https://app.runwayml.com/video-tools/teams/${teamMatch[1]}/ai-tools/generate?tool=video&mode=tools`;
+      if (url !== target) {
+        await page.goto(target, { waitUntil: "domcontentloaded" }).catch(() => undefined);
+        await page.waitForTimeout(2500);
+      }
+    } else {
+      await page.goto("https://app.runwayml.com/", { waitUntil: "domcontentloaded" }).catch(() => undefined);
+      await page.waitForTimeout(2500);
+    }
   }
 }
 
@@ -211,7 +279,15 @@ async function configureResolution(page: Page, resolution: ResolvedJob["resoluti
       return;
     }
     await button.click({ timeout: 8000 });
-    await pickRoleOption(page, new RegExp(`^${escapeRegex(resolution)}$`, "i"));
+    try {
+      await pickRoleOption(page, new RegExp(`^${escapeRegex(resolution)}$`, "i"));
+    } catch (error) {
+      if (isOptionDisabledError(error)) {
+        console.warn(`[runway] resolution ${resolution} not available for current model/duration/aspect; keeping ${text || "default"}`);
+        return;
+      }
+      throw error;
+    }
     return;
   }
   // Resolution selector may not exist for some models; non-fatal.
@@ -235,7 +311,26 @@ async function uploadReferences(page: Page, refs: string[]): Promise<void> {
       await page.waitForTimeout(1500);
     }
   }
-  await page.waitForTimeout(4000);
+  // Wait for upload to complete: each ref shows up as IMG_<n> in the references panel.
+  // Runway also shows a transient "Started uploading N files" toast that disappears when done.
+  const deadline = Date.now() + 120000;
+  while (Date.now() < deadline) {
+    const body = await readBody(page);
+    const labelCount = countImgLabels(body);
+    const stillUploading = /(started uploading|uploading\s+\d+|uploading\.\.\.)/i.test(body);
+    if (labelCount >= refs.length && !stillUploading) {
+      // All refs visible and no in-progress toast — done.
+      await page.waitForTimeout(1500);
+      return;
+    }
+    await page.waitForTimeout(1500);
+  }
+  throw new Error(`Reference upload did not complete within 120s (saw ${countImgLabels(await readBody(page))}/${refs.length} thumbnails)`);
+}
+
+function countImgLabels(body: string): number {
+  const matches = body.match(/\bIMG_\d+\b/g);
+  return matches ? new Set(matches).size : 0;
 }
 
 async function fillPrompt(page: Page, prompt: string): Promise<void> {
@@ -251,28 +346,84 @@ async function fillPrompt(page: Page, prompt: string): Promise<void> {
   }
 }
 
-async function clickGenerateAndConfirm(page: Page): Promise<boolean> {
-  const startUrl = page.url();
-  const generate = page.getByRole("button", { name: "Generate", exact: true }).first();
-  await generate.click({ timeout: 15000 });
-  // Wait for either URL change or active-generation text, twice in a row
-  const deadline = Date.now() + 90000;
-  let consecutive = 0;
-  while (Date.now() < deadline) {
-    const body = await readBody(page);
-    if (isBlocked(body)) {
-      return false;
+async function clickGenerateAndConfirm(page: Page, debugDir: string, jobName: string): Promise<boolean> {
+  await dismissOverlays(page);
+  // Click-retry strategy: each click attempt waits up to 30s for either a
+  // /v1/tasks 200 (canonical queue signal) or "in queue / generating" body
+  // text. If neither appears, the click likely didn't fire — click again.
+  // Up to 3 clicks per call.
+  const maxClicks = 3;
+  for (let attempt = 1; attempt <= maxClicks; attempt++) {
+    const taskResponsePromise = page
+      .waitForResponse(
+        (response) => response.url().includes("/v1/tasks") && response.request().method() === "POST",
+        { timeout: 30000 }
+      )
+      .catch(() => undefined);
+
+    const generate = page.getByRole("button", { name: "Generate", exact: true }).first();
+    try {
+      await generate.click({ timeout: 15000 });
+    } catch (clickError) {
+      console.warn(`[${jobName}] generate click ${attempt} failed: ${(clickError as Error).message}`);
     }
-    if (page.url() !== startUrl || hasActiveText(body)) {
-      consecutive++;
-      if (consecutive >= 2) {
+
+    const perClickDeadline = Date.now() + 30000;
+    let networkDone = false;
+    let uiActive = false;
+    while (Date.now() < perClickDeadline) {
+      const body = await readBody(page);
+      if (isBlocked(body)) {
+        await screenshot(page, debugDir, `${jobName}-generate-blocked`);
+        return false;
+      }
+      if (hasActiveText(body)) {
+        uiActive = true;
+        break;
+      }
+      networkDone = await Promise.race([
+        taskResponsePromise.then(() => true).catch(() => false),
+        new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 1500))
+      ]);
+      if (networkDone) break;
+    }
+
+    if (networkDone) {
+      const response = await taskResponsePromise;
+      if (response) {
+        const status = response.status();
+        if (status >= 400) {
+          let body = "";
+          try { body = (await response.text()).slice(0, 300); } catch { /* */ }
+          console.error(`[${jobName}] /v1/tasks returned ${status}: ${body}`);
+          await screenshot(page, debugDir, `${jobName}-generate-task-${status}`);
+          if (attempt < maxClicks) {
+            console.warn(`[${jobName}] retrying click after server error (attempt ${attempt}/${maxClicks})`);
+            await page.waitForTimeout(3000);
+            continue;
+          }
+          return false;
+        }
+        try {
+          const json = await response.json();
+          const taskId = json?.task?.id;
+          if (taskId) {
+            console.log(`[${jobName}] queued as task ${taskId}`);
+          }
+        } catch { /* */ }
         return true;
       }
-    } else {
-      consecutive = 0;
     }
-    await page.waitForTimeout(3000);
+    if (uiActive) {
+      console.log(`[${jobName}] queue confirmed via UI text (attempt ${attempt})`);
+      return true;
+    }
+    if (attempt < maxClicks) {
+      console.warn(`[${jobName}] click ${attempt} produced no /v1/tasks POST and no "in queue" text — retrying`);
+      await page.waitForTimeout(3000);
+    }
   }
+  await screenshot(page, debugDir, `${jobName}-generate-exhausted-clicks`);
   return false;
 }
 
@@ -483,6 +634,18 @@ async function hasFourKButton(page: Page): Promise<boolean> {
   })).catch(() => false);
 }
 
+class OptionDisabledError extends Error {
+  readonly disabled = true as const;
+  constructor(message: string) {
+    super(message);
+    this.name = "OptionDisabledError";
+  }
+}
+
+function isOptionDisabledError(error: unknown): boolean {
+  return error instanceof Error && (error as Partial<OptionDisabledError>).disabled === true;
+}
+
 async function pickRoleOption(page: Page, name: RegExp): Promise<void> {
   const candidates: Locator[] = [
     page.getByRole("option", { name }),
@@ -494,11 +657,22 @@ async function pickRoleOption(page: Page, name: RegExp): Promise<void> {
   ];
   for (const candidate of candidates) {
     const target = candidate.first();
-    if (await target.isVisible({ timeout: 1500 }).catch(() => false)) {
-      await target.click({ timeout: 5000 });
-      await page.waitForTimeout(400);
-      return;
+    if (!await target.isVisible({ timeout: 1500 }).catch(() => false)) {
+      continue;
     }
+    const disabled = await target.evaluate((el: Element) => {
+      const aria = el.getAttribute("aria-disabled");
+      const data = el.getAttribute("data-disabled");
+      return aria === "true" || data === "true" || data === "";
+    }).catch(() => false);
+    if (disabled) {
+      // Close any open popover before bubbling
+      await page.keyboard.press("Escape").catch(() => undefined);
+      throw new OptionDisabledError(`option matching ${name} is disabled (Runway constraint)`);
+    }
+    await target.click({ timeout: 5000 });
+    await page.waitForTimeout(400);
+    return;
   }
   throw new Error(`Could not find option matching ${name}`);
 }
