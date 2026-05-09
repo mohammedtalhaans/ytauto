@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { launchContext } from "../runway.js";
 import { runPool } from "../pool.js";
 import { projectDir, saveManifest, setStageStatus } from "../manifest.js";
-import type { Manifest, ResolvedJob } from "../types.js";
+import type { Manifest, ResolvedJob, ResolvedRef } from "../types.js";
 
 export interface GenerateOptions {
   cwd?: string;
@@ -31,6 +31,9 @@ export async function runGenerate(manifest: Manifest, options: GenerateOptions):
   for (const s of manifest.settings) {
     if (s.imagePath) refLookup.set(s.name, s.imagePath);
   }
+  for (const p of manifest.props) {
+    if (p.imagePath) refLookup.set(p.name, p.imagePath);
+  }
 
   const pending: ResolvedJob[] = [];
   for (let i = 0; i < manifest.segments.length; i++) {
@@ -40,13 +43,16 @@ export async function runGenerate(manifest: Manifest, options: GenerateOptions):
       options.log(`[generate] ${segment.name}: already done, skipping`);
       continue;
     }
-    const refs: string[] = [];
+    // Build refs as {name, path} pairs. The `name` becomes the upload
+    // filename (`<name>.png`) so `@<name>` inside the segment prompt binds
+    // to the right reference. Skip refs whose artifact didn't generate.
+    const refs: ResolvedRef[] = [];
     for (const name of segment.refs) {
       const path = refLookup.get(name);
-      if (path) refs.push(path);
+      if (path) refs.push({ name, path });
     }
     if (segment.firstFrameImagePath && existsSync(segment.firstFrameImagePath)) {
-      refs.push(segment.firstFrameImagePath);
+      refs.push({ name: "first-frame", path: segment.firstFrameImagePath });
     }
     pending.push({
       index: i,

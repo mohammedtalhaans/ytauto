@@ -52,7 +52,8 @@ Asks for **strict JSON** matching this shape:
 {
   "title": "...",
   "logline": "...",
-  "storyBeats": ["beat 1", "beat 2", "..."],   // one per intended segment
+  "hookMoment": "the eye-catching 3-5s opening — concrete physical event, kinetic, scroll-stopping",
+  "storyBeats": ["beat 1 incorporates the hook", "beat 2", "..."],   // one per intended segment
   "characters": [{ "name": "alex", "description": "50-90 word identity block" }],
   "settings":   [{ "name": "apartment-kitchen", "description": "30-60 word setting" }],
   "props":      [{ "name": "silver-locket", "description": "25-50 word prop" }],
@@ -61,16 +62,20 @@ Asks for **strict JSON** matching this shape:
 }
 ```
 
-The outline JSON is parsed, validated (titles, beats, style bible, audio bible all required), and stored in the manifest. The bibles are the central trick: they describe ONE coherent look + ONE coherent audio bed that every segment will inherit verbatim.
+The outline JSON is parsed, validated (titles, hookMoment ≥20 chars, beats, style bible, audio bible all required), and stored in the manifest. The bibles are the central trick: they describe ONE coherent look + ONE coherent audio bed that every segment will inherit verbatim. The `hookMoment` is segment 1's mandatory opening — pass 2 places it as the literal first 3–5s timestamp block.
 
 ### Pass 2 — segments ([`prompts/ideate-segments.md`](prompts/ideate-segments.md))
 
 Receives the entire pass-1 outline JSON as input plus the segment-duration target. Codex emits one segment per `storyBeats[i]` in order. Each segment is just:
 
-- `prompt` — Seedance field-card with 2–4 timestamp blocks summing exactly to the segment duration
+- `prompt` — Seedance field-card with **3–5 timestamp blocks of 3–5s each** (fast pacing default), using `@<refname>` Seedance reference syntax to bind to uploaded assets
 - `refs` — names from the outline that appear on screen (characters + setting + props)
 - `firstFrameDescription` — REQUIRED, no nulls — a still-frame composition for gpt-image-2 to render
 - `duration` — within 5–15s
+
+**Segment 1 is special**: its first timestamp block is required to be the literal `hookMoment` from pass 1, 3–5s long, kinetic. Pass 2 is told to make it visually arresting from frame 1 — never an establishing shot.
+
+**Reference syntax**: every visible asset is cited as `@<name>` inside timestamp blocks (e.g. `Tight close-up on @maya picking up @silver-locket from @subway-platform tile.`). This is the [pexoai `seedance-2.0-prompter`](https://github.com/pexoai/pexo-skills/tree/main/skills/seedance-2.0-prompter) skill's atomic-element pattern: subject identity → asset reference (much stronger than free-text), camera language → text, scene → hybrid (asset + descriptive text).
 
 Critically, pass 2 is told **NOT** to include character/setting/prop descriptions inside the prompt. The pipeline auto-prepends them in the next step. Pass 2 keeps the base prompt tight — under a budget the pipeline calculates so the final composed prompt stays ≤3500 chars.
 
@@ -243,7 +248,7 @@ For each segment:
 1. **`navigateUntilReady(page, generationUrl)`** — `page.goto`, wait for `networkidle`, sanity-check that the prompt textbox or the "Custom" sidebar button is visible. If not, reload + retry up to 4 attempts. On attempt 2+, force-navigate to the team-specific URL `/video-tools/teams/<slug>/ai-tools/generate?tool=video&mode=tools`. Catches the case where Runway hangs on the `/home` redirect.
 2. **`openCustomVideoTool(page)`** — click the "Custom" tab if the prompt box isn't already visible. Uses a 4-attempt retry with last-ditch hard navigation.
 3. **`configureModel / configureAspect / configureDuration / configureResolution`** — open the dropdown via `aria-label='…'`, click the option via `getByRole('option', {name: …})`. Each one early-returns if the trigger button's text already shows the desired value (avoids clicking dropdowns unnecessarily).
-4. **`uploadReferences(page, refs)`** — `setInputFiles` on the first hidden `input[type='file']`. Then poll the page body for `IMG_<n>` thumbnail labels until count ≥ refs.length **and** no "Started uploading…" toast is showing. This is critical — clicking Generate before uploads commit silently breaks the queue submission. Timeout 120s.
+4. **`uploadReferences(page, refs)`** — refs are `{name, path}` pairs. Each file is read into a Buffer in memory and uploaded via `setInputFiles({name: '<refname>.png', mimeType: 'image/png', buffer})` so the file lands at the Seedance backend with the bare ref name. This is what makes the `@<refname>` syntax in the segment prompt actually bind — without the rename, files would arrive as `character-leo.png` and `@leo` wouldn't match. The first-frame is included as `@first-frame`. After upload kicks off, poll the page body for `IMG_<n>` thumbnail labels until count ≥ refs.length **and** no "Started uploading…" toast is showing — clicking Generate before uploads commit silently breaks the queue submission. Timeout 120s.
 5. **`fillPrompt(page, prompt)`** — focus the prompt contenteditable, select-all + delete (clear stale state from previous tab), then `fill()`.
 6. **`clickGenerateAndConfirm(page)`** — see below.
 7. **`waitForGenerationComplete`** — passive poll the page body every 60s for absence of "in queue / generating" text **AND** presence of "upscale / download / 4K.mp4" text. Two consecutive passes needed (avoid transient flicker). Up to 60 min.

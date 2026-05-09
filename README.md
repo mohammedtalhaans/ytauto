@@ -159,6 +159,7 @@ projects/<slug>/
   "idea": "the original one-liner",
   "title": "Codex-generated title",
   "logline": "Codex-generated one-line summary",
+  "hookMoment": "the eye-catching opening shot — executed in segment[0]'s opening 3-5s",
   "storyBeats": ["...", "..."],
   "defaults": { "model": "seedance-2", "aspect": "9:16", "duration": 15, "resolution": "1080p", "upscale": true },
   "style": {
@@ -212,6 +213,34 @@ projects/<slug>/
 ```
 
 **Idempotency:** every stage checks the manifest before doing work. `artifacts` skips assets that already have an `imagePath`. `frames` skips segments whose `firstFrameImagePath` exists. `generate` skips segments with `videoStatus === "done"` whose `videoPath` exists. `stitch` always re-runs (it's cheap — just an ffmpeg concat).
+
+---
+
+## Pacing and the opening hook (mandatory)
+
+Vertical short-form video lives or dies in the first 3–5 seconds. Every project produced by this pipeline therefore has TWO hard rules baked into ideate:
+
+1. **Mandatory opening hook** — segment 1's first 3–5s must be a kinetic, eye-catching, scroll-stopping moment (one specific physical event — a locket spinning on subway tile, a hand snapping fingers and every city light flicking on, a face emerging from water in extreme macro). Pass 1 of ideate produces a `hookMoment` field describing it; pass 2 places it as the literal opening timestamp block of segment 1. The pipeline validates this — if pass 1 returns a vague or missing `hookMoment`, ideate errors out.
+2. **Fast pacing default** — 3–5 timestamp shot blocks of 3–5s each per 15s segment (not 2 of 7-8s). Multiple action verbs across each segment, story progression in EVERY beat, kinetic camera moves (handheld, whip-pan, snap zoom, tracking) favored over locked-off. The slow contemplative beat is allowed once per segment, not as the default.
+
+These show up in `manifest.hookMoment`, in `script.md`, and as the opening lines of `segments[0].prompt`. To override the hook for a project, edit `manifest.hookMoment` AND segment 1's first timestamp block, then re-run.
+
+---
+
+## `@<refname>` reference binding
+
+Every uploaded reference is bound by name. Inside segment prompts, characters / settings / props are cited as `@<name>` (matching the kebab-case names from the outline). Example:
+
+```
+[00:00-00:04] Tight close-up on @maya's hand picking up @silver-locket
+              from the @subway-platform tile. Slow dolly-in.
+```
+
+Under the hood, refs are uploaded to Runway as `<name>.png` (the artifact file is renamed at upload time via in-memory buffer + filename override) so the Seedance backend sees `@maya` bind to `maya.png`, `@silver-locket` bind to `silver-locket.png`, etc. This is dramatically stronger asset-identity binding than free-text "the woman in the rust-red coat".
+
+The first-frame is auto-attached as `@first-frame`. Pass 2 may explicitly cite it in segment 1's opening block to lock the visual start.
+
+This is implemented per the [pexoai `seedance-2.0-prompter` skill](https://github.com/pexoai/pexo-skills/tree/main/skills/seedance-2.0-prompter) — atomic-element mapping (subject identity → asset reference, camera language → text, scene → hybrid, etc.).
 
 ---
 

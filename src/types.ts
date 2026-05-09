@@ -63,6 +63,10 @@ export interface Manifest {
   };
   style?: StyleBible;
   audio?: AudioBible;
+  // Mandatory eye-catching opening — every project starts with a 3-5s hook
+  // executed in segment[0]'s opening timestamp block. Captured during ideate
+  // pass 1; consumed by ideate pass 2 to write segment[0]'s opening shot.
+  hookMoment?: string;
   characters: Asset[];
   settings: Asset[];
   props: Asset[];                          // key objects (locket, letter, bouquet, etc.)
@@ -82,11 +86,21 @@ export const DEFAULT_DEFAULTS: Manifest["defaults"] = {
 export const STAGE_ORDER: StageName[] = ["ideate", "artifacts", "frames", "generate", "stitch"];
 
 // Runway driver types — mirror of videogen's ResolvedJob shape so runway.ts stays portable.
+//
+// `refs` is now {name, path} pairs (was string[]) so runway.ts can re-upload
+// each reference with a name that matches the `@<name>` binding inside the
+// segment prompt. Seedance 2.0 binds `@<asset_name>` to the uploaded
+// filename, so the upload name MUST match.
+export interface ResolvedRef {
+  name: string;
+  path: string;
+}
+
 export interface ResolvedJob {
   index: number;
   name: string;
   prompt: string;
-  refs: string[];
+  refs: ResolvedRef[];
   model: Model;
   aspect: Aspect;
   duration: number;

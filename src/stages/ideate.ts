@@ -15,6 +15,7 @@ import {
 interface OutlineRaw {
   title: string;
   logline: string;
+  hookMoment: string;
   storyBeats: string[];
   characters: Array<{ name: string; description: string }>;
   settings: Array<{ name: string; description: string }>;
@@ -54,6 +55,7 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   const outline = await passOutline(manifest, options, cwd);
   manifest.title = outline.title;
   manifest.logline = outline.logline;
+  manifest.hookMoment = outline.hookMoment;
   manifest.storyBeats = outline.storyBeats;
   manifest.characters = outline.characters.map((c) => ({ name: kebab(c.name), description: c.description }));
   manifest.settings = outline.settings.map((s) => ({ name: kebab(s.name), description: s.description }));
@@ -64,6 +66,7 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   options.log(
     `[ideate] outline: ${manifest.characters.length} char(s), ${manifest.settings.length} setting(s), ${manifest.props.length} prop(s), ${manifest.storyBeats.length} beat(s)`
   );
+  options.log(`[ideate] hook: ${manifest.hookMoment}`);
 
   // ---- PASS 2: Segments (with up to 2 retries on length-violation) ----
   const segments = await passSegmentsWithRetries(manifest, outline, options, cwd);
@@ -125,6 +128,9 @@ async function passOutline(manifest: Manifest, options: IdeateOptions, cwd: stri
 
 function validateOutline(parsed: OutlineRaw): void {
   if (!parsed.title || !parsed.logline) throw new Error("[ideate] outline missing title/logline");
+  if (!parsed.hookMoment || parsed.hookMoment.trim().length < 20) {
+    throw new Error("[ideate] outline missing hookMoment (or too short to be a real hook)");
+  }
   if (!Array.isArray(parsed.storyBeats) || parsed.storyBeats.length === 0) {
     throw new Error("[ideate] outline missing storyBeats");
   }
@@ -272,6 +278,11 @@ function clampDuration(value: number): number {
 
 function buildScriptMarkdown(manifest: Manifest): string {
   const lines = [`# ${manifest.title}`, "", manifest.logline, ""];
+  if (manifest.hookMoment) {
+    lines.push("## Opening hook (first 3-5s of segment 1)", "");
+    lines.push(`> ${manifest.hookMoment}`);
+    lines.push("");
+  }
   if (manifest.style) {
     lines.push("## Style bible", "");
     lines.push(`- **Era**: ${manifest.style.era}`);

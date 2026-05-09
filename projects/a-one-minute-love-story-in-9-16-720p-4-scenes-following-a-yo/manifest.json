@@ -1,0 +1,176 @@
+{
+  "slug": "a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo",
+  "idea": "a one-minute love story in 9:16 720p, 4 scenes following a young man and woman whose paths repeatedly cross around a recurring silver locket — contemporary indie cinema with warm grade and a piano + strings score",
+  "title": "The Silver Thread",
+  "logline": "A quiet one-minute love story about two strangers whose repeated crossings around a lost silver locket slowly reveal they have been orbiting the same memory for years.",
+  "createdAt": "2026-05-09T19:50:47.445Z",
+  "updatedAt": "2026-05-09T21:25:00.703Z",
+  "defaults": {
+    "model": "seedance-2",
+    "aspect": "9:16",
+    "duration": 15,
+    "resolution": "1080p",
+    "upscale": true
+  },
+  "characters": [
+    {
+      "name": "leo",
+      "description": "27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\character-leo.png"
+    },
+    {
+      "name": "maya",
+      "description": "26-year-old Mexican British woman, medium tan skin with golden undertones, hazel-green eyes, chestnut brown shoulder-length curly hair worn half-pinned with loose strands around her face, wearing a rust-red wool coat over a soft ivory blouse, high-waisted dark indigo jeans, black ankle boots with a low heel, and a narrow tan leather satchel; tiny crescent tattoo behind her right ear, expressive upright posture.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\character-maya.png"
+    }
+  ],
+  "settings": [
+    {
+      "name": "subway-platform",
+      "description": "underground city subway platform with late-modern tiled walls, brushed steel benches, yellow safety line, scratched timetable boards, and damp concrete floor. Early evening fluorescent strips mix with warm train-window light, creating greenish amber shadows. Dominant palette: oxidized teal, sodium amber, and charcoal grey.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\setting-subway-platform.png"
+    },
+    {
+      "name": "bookshop-cafe",
+      "description": "narrow independent bookshop-cafe in a converted brick storefront, with tall wooden shelves, marble-topped counter, brass reading lamps, mismatched bistro tables, and condensation on the front window. Blue-hour light filters through glass while tungsten bulbs glow warmly. Dominant palette: honey wood, brick red, and deep green.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\setting-bookshop-cafe.png"
+    },
+    {
+      "name": "rainy-cinema-street",
+      "description": "rain-slick sidewalk outside a small art-house cinema with 1930s facade, glowing marquee bulbs, poster cases, puddled asphalt, and passing taxi reflections. Nighttime light comes from neon signage, streetlamps, and cinema doors. Dominant palette: wet black, warm gold, and muted rose.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\setting-rainy-cinema-street.png"
+    },
+    {
+      "name": "rooftop-garden",
+      "description": "modest apartment rooftop garden with waist-high brick parapet, weathered wooden planters, string lights, metal folding chairs, and a faded mural wall. Dawn light rises behind nearby buildings, softened by cool haze and warm bulbs. Dominant palette: pale peach, sage green, and soft concrete grey.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\setting-rooftop-garden.png"
+    }
+  ],
+  "props": [
+    {
+      "name": "silver-locket",
+      "description": "small oval sterling silver locket on a thin matching chain, slightly tarnished around the hinge, engraved with a tiny cursive letter 'M' and a hairline scratch across the back; opens to reveal a faded black-and-white rooftop photograph, usually held in a palm or dangling from fingertips.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\artifacts\\prop-silver-locket.png"
+    }
+  ],
+  "segments": [
+    {
+      "name": "01-platform-locket",
+      "prompt": "Style: contemporary 2020s indie cinema with intimate urban romantic realism; 35mm anamorphic for most shots, 50mm close-ups for faces and the locket, shallow depth of field on emotional beats with softly readable vertical backgrounds; warm amber-teal grade, gentle peach skin tones, slightly lifted blacks, soft highlight roll-off, restrained saturation; digital cinema with subtle Super 16 inspired grain emulation, mild halation around practical lights, natural texture without heavy stylization; handheld realism with quiet breathing movement, sparing slow dolly-ins during recognition moments, no fast cuts or flashy transitions.\n\nGlobal audio bed: music — solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment; ambient — continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together; recurring SFX motif — the soft metallic click of the silver locket clasp, recurring each time the locket changes hands or opens; mix — music remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear.\n\n[maya]: 26-year-old Mexican British woman, medium tan skin with golden undertones, hazel-green eyes, chestnut brown shoulder-length curly hair worn half-pinned with loose strands around her face, wearing a rust-red wool coat over a soft ivory blouse, high-waisted dark indigo jeans, black ankle boots with a low heel, and a narrow tan leather satchel; tiny crescent tattoo behind her right ear, expressive upright posture.\n[leo]: 27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture.\n\nContemporary indie romantic realism. 15 seconds.\n\n[00:00-00:04] Tight close-up near the yellow safety line. The silver locket slips from her satchel. Slow handheld tilt down.\n   Damp concrete reflects the tiled platform and train-window glow. Warm amber-teal grade with greenish shadows.\n\n[00:04-00:08] Wide platform shot. She boards the train. Locked-off camera.\n\n[00:08-00:12] Medium shot on the man by the bench. He notices the locket. Slow dolly-in.\n\n[00:12-00:15] Tight close-up on his hand. He lifts the silver locket. Rack focus from chain to closing train doors.\n\nSound: continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together. SFX: train door chime @ 6s; soft metallic locket click @ 14s.\nMusic: solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment, enters at 1s, resolves at 14s.\nmusic remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "maya",
+        "leo",
+        "subway-platform",
+        "silver-locket"
+      ],
+      "firstFrameDescription": "Tight close-up at ankle height beside the subway platform yellow safety line. Maya's black boot and tan satchel edge frame the silver locket resting half-open on damp concrete, train light glowing behind it. Fluorescent teal and amber reflections soften the tiled background, intimate indie cinema mood.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\frames\\01-platform-locket.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\segments\\01-platform-locket.mp4",
+      "videoStatus": "done"
+    },
+    {
+      "name": "02-bookshop-missed-return",
+      "prompt": "Style: contemporary 2020s indie cinema with intimate urban romantic realism; 35mm anamorphic for most shots, 50mm close-ups for faces and the locket, shallow depth of field on emotional beats with softly readable vertical backgrounds; warm amber-teal grade, gentle peach skin tones, slightly lifted blacks, soft highlight roll-off, restrained saturation; digital cinema with subtle Super 16 inspired grain emulation, mild halation around practical lights, natural texture without heavy stylization; handheld realism with quiet breathing movement, sparing slow dolly-ins during recognition moments, no fast cuts or flashy transitions.\n\nGlobal audio bed: music — solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment; ambient — continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together; recurring SFX motif — the soft metallic click of the silver locket clasp, recurring each time the locket changes hands or opens; mix — music remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear.\n\n[maya]: 26-year-old Mexican British woman, medium tan skin with golden undertones, hazel-green eyes, chestnut brown shoulder-length curly hair worn half-pinned with loose strands around her face, wearing a rust-red wool coat over a soft ivory blouse, high-waisted dark indigo jeans, black ankle boots with a low heel, and a narrow tan leather satchel; tiny crescent tattoo behind her right ear, expressive upright posture.\n[leo]: 27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture.\n\nContemporary indie romantic realism. 15 seconds.\n\n[00:00-00:05] Medium shot between tall shelves. The man enters the aisle. Slow handheld push-in.\n   Brass lamps glow over honey wood and brick red walls. Blue-hour window light keeps the amber-teal grade gentle.\n\n[00:05-00:09] Close-up at a bistro table. He reveals the silver locket in his palm. Locked-off camera.\n\n[00:09-00:12] Medium shot across the cafe window. She passes his table. Slow pan following her.\n\n[00:12-00:15] Tight close-up on his face and hand. He hesitates. Minimal handheld drift.\n\nSound: continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together. SFX: cup set down @ 4s; soft metallic locket click @ 6s.\nMusic: solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment, enters at 0s, resolves at 14s.\nmusic remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "maya",
+        "leo",
+        "bookshop-cafe",
+        "silver-locket"
+      ],
+      "firstFrameDescription": "Medium portrait shot through a narrow bookshop-cafe aisle. Leo stands partly hidden by tall wooden shelves, one hand low near his jacket pocket where the silver locket chain catches lamp light. Maya is visible deeper in the cafe near the marble counter, softly out of focus. Blue-hour glass and tungsten bulbs create warm amber-teal contrast.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\frames\\02-bookshop-missed-return.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\segments\\02-bookshop-missed-return.mp4",
+      "videoStatus": "done"
+    },
+    {
+      "name": "03-cinema-recognition",
+      "prompt": "Style: contemporary 2020s indie cinema with intimate urban romantic realism; 35mm anamorphic for most shots, 50mm close-ups for faces and the locket, shallow depth of field on emotional beats with softly readable vertical backgrounds; warm amber-teal grade, gentle peach skin tones, slightly lifted blacks, soft highlight roll-off, restrained saturation; digital cinema with subtle Super 16 inspired grain emulation, mild halation around practical lights, natural texture without heavy stylization; handheld realism with quiet breathing movement, sparing slow dolly-ins during recognition moments, no fast cuts or flashy transitions.\n\nGlobal audio bed: music — solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment; ambient — continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together; recurring SFX motif — the soft metallic click of the silver locket clasp, recurring each time the locket changes hands or opens; mix — music remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear.\n\n[maya]: 26-year-old Mexican British woman, medium tan skin with golden undertones, hazel-green eyes, chestnut brown shoulder-length curly hair worn half-pinned with loose strands around her face, wearing a rust-red wool coat over a soft ivory blouse, high-waisted dark indigo jeans, black ankle boots with a low heel, and a narrow tan leather satchel; tiny crescent tattoo behind her right ear, expressive upright posture.\n[leo]: 27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture.\n\nContemporary indie romantic realism. 15 seconds.\n\n[00:00-00:04] Wide street shot outside the cinema. She pauses beneath the marquee. Slow tracking shot.\n   Puddled asphalt reflects warm bulbs, neon, and taxi light. Wet black and muted rose sit inside the amber-teal grade.\n\n[00:04-00:08] Medium shot across the sidewalk. The man raises the silver locket. Slow dolly-in.\n\n[00:08-00:12] Extreme macro on the opened locket. The rooftop photograph fills the frame. Locked-off camera.\n\n[00:12-00:15] Close-up on her face. She recognizes the photograph. Slow dolly-in.\n\nSound: continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together. SFX: rain on umbrella fabric @ 2s; soft metallic locket click @ 9s.\nMusic: solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment, enters at 0s, resolves at 14s.\nmusic remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "maya",
+        "leo",
+        "rainy-cinema-street",
+        "silver-locket"
+      ],
+      "firstFrameDescription": "Wide portrait street composition outside the art-house cinema at night. Maya stands under the glowing marquee with rain beading on her rust-red coat, turned toward Leo across the sidewalk. Leo holds the silver locket at chest height. Puddles mirror gold bulbs and rose neon, soft grain and lifted blacks.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\frames\\03-cinema-recognition.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\segments\\03-cinema-recognition.mp4",
+      "videoStatus": "done"
+    },
+    {
+      "name": "04-rooftop-return",
+      "prompt": "Style: contemporary 2020s indie cinema with intimate urban romantic realism; 35mm anamorphic for most shots, 50mm close-ups for faces and the locket, shallow depth of field on emotional beats with softly readable vertical backgrounds; warm amber-teal grade, gentle peach skin tones, slightly lifted blacks, soft highlight roll-off, restrained saturation; digital cinema with subtle Super 16 inspired grain emulation, mild halation around practical lights, natural texture without heavy stylization; handheld realism with quiet breathing movement, sparing slow dolly-ins during recognition moments, no fast cuts or flashy transitions.\n\nGlobal audio bed: music — solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment; ambient — continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together; recurring SFX motif — the soft metallic click of the silver locket clasp, recurring each time the locket changes hands or opens; mix — music remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear.\n\n[maya]: 26-year-old Mexican British woman, medium tan skin with golden undertones, hazel-green eyes, chestnut brown shoulder-length curly hair worn half-pinned with loose strands around her face, wearing a rust-red wool coat over a soft ivory blouse, high-waisted dark indigo jeans, black ankle boots with a low heel, and a narrow tan leather satchel; tiny crescent tattoo behind her right ear, expressive upright posture.\n[leo]: 27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture.\n\nContemporary indie romantic realism. 15 seconds.\n\n[00:00-00:05] Wide rooftop garden shot. The two face each other near the mural wall. Slow dolly-in.\n   Planters, string lights, and dawn haze frame the brick parapet. Pale peach and sage tones hold the warm amber-teal grade.\n\n[00:05-00:09] Tight close-up on their hands. He returns the silver locket. Locked-off camera.\n\n[00:09-00:12] Medium two-shot. She closes her fingers around it. Slow handheld drift.\n\n[00:12-00:15] Close-up two-shot. They meet each other's eyes. Minimal dolly-in.\n\nSound: continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together. SFX: soft metallic locket click @ 8s; distant morning traffic swell @ 13s.\nMusic: solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment, enters at 0s, resolves at 15s.\nmusic remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "duration": 15,
+      "aspect": "9:16",
+      "model": "seedance-2",
+      "resolution": "1080p",
+      "upscale": true,
+      "refs": [
+        "maya",
+        "leo",
+        "rooftop-garden",
+        "silver-locket"
+      ],
+      "firstFrameDescription": "Wide portrait shot of the rooftop garden at dawn. Maya and Leo stand a few feet apart near the faded mural wall, framed by weathered planters and dim string lights. The silver locket rests open in Leo's palm between them. Peach dawn haze, sage greenery, soft concrete grey, intimate shallow focus.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\frames\\04-rooftop-return.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\segments\\04-rooftop-return.mp4",
+      "videoStatus": "done"
+    }
+  ],
+  "stages": {
+    "ideate": {
+      "status": "done",
+      "completedAt": "2026-05-09T19:52:26.719Z"
+    },
+    "artifacts": {
+      "status": "done",
+      "completedAt": "2026-05-09T20:14:37.260Z"
+    },
+    "frames": {
+      "status": "done",
+      "completedAt": "2026-05-09T20:22:03.875Z"
+    },
+    "generate": {
+      "status": "done",
+      "completedAt": "2026-05-09T21:24:59.383Z"
+    },
+    "stitch": {
+      "status": "done",
+      "completedAt": "2026-05-09T21:25:00.703Z"
+    }
+  },
+  "storyBeats": [
+    "Segment 1 beat - Maya drops the silver locket on a subway platform, and Leo picks it up just as she disappears behind closing train doors.",
+    "Segment 2 beat - Leo nearly returns the locket in a bookshop-cafe, but a shy missed moment turns the object from lost property into a mystery between them.",
+    "Segment 3 beat - In the rain outside the cinema, Maya finally sees Leo holding the locket, and the photograph inside reveals a shared childhood place.",
+    "Segment 4 beat - They meet at the rooftop garden from the photograph, the locket returns to Maya, and the repeated crossings resolve into a first honest connection."
+  ],
+  "style": {
+    "era": "contemporary 2020s indie cinema with intimate urban romantic realism",
+    "lens": "35mm anamorphic for most shots, 50mm close-ups for faces and the locket, shallow depth of field on emotional beats with softly readable vertical backgrounds",
+    "grade": "warm amber-teal grade, gentle peach skin tones, slightly lifted blacks, soft highlight roll-off, restrained saturation",
+    "filmStock": "digital cinema with subtle Super 16 inspired grain emulation, mild halation around practical lights, natural texture without heavy stylization",
+    "motion": "handheld realism with quiet breathing movement, sparing slow dolly-ins during recognition moments, no fast cuts or flashy transitions"
+  },
+  "audio": {
+    "music": "solo felt piano plus warm chamber strings, 68 bpm, lyrical romantic theme in C major with a recurring four-note rising motif that grows fuller each segment",
+    "ambient": "continuous soft city hum, distant traffic, occasional train rumble, rain texture where appropriate, and faint room tone tying every location together",
+    "sfxMotif": "the soft metallic click of the silver locket clasp, recurring each time the locket changes hands or opens",
+    "mixNote": "music remains underscored and continuous in mood, ambient stays subtle, close foreground sounds like breath, footsteps, rain, and the locket click remain clear"
+  },
+  "finalPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-love-story-in-9-16-720p-4-scenes-following-a-yo\\final.mp4"
+}

@@ -1,9 +1,9 @@
 import { execFile } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { chromium, type BrowserContext, type Download, type Locator, type Page } from "playwright";
-import { MODEL_LABEL, type ResolvedJob } from "./types.js";
+import { MODEL_LABEL, type ResolvedJob, type ResolvedRef } from "./types.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -293,21 +293,37 @@ async function configureResolution(page: Page, resolution: ResolvedJob["resoluti
   // Resolution selector may not exist for some models; non-fatal.
 }
 
-async function uploadReferences(page: Page, refs: string[]): Promise<void> {
+async function uploadReferences(page: Page, refs: ResolvedRef[]): Promise<void> {
   if (!refs.length) {
     return;
   }
-  for (const path of refs) {
-    if (!existsSync(path)) {
-      throw new Error(`Reference file not found: ${path}`);
+  // Read each file as a buffer and upload with a deterministic name —
+  // `<refname>.<ext>` — so the Seedance backend sees the same filename the
+  // segment prompt's `@<refname>` binding expects. Without this, file gets
+  // uploaded as `character-leo.png` and `@leo` in the prompt fails to bind.
+  const payloads: Array<{ name: string; mimeType: string; buffer: Buffer }> = [];
+  const seenNames = new Set<string>();
+  for (const ref of refs) {
+    if (!existsSync(ref.path)) {
+      throw new Error(`Reference file not found: ${ref.path}`);
     }
+    const ext = ref.path.split(".").pop()?.toLowerCase() ?? "png";
+    let baseName = ref.name;
+    let candidate = `${baseName}.${ext}`;
+    let n = 1;
+    while (seenNames.has(candidate)) {
+      candidate = `${baseName}-${++n}.${ext}`;
+    }
+    seenNames.add(candidate);
+    const mimeType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png";
+    payloads.push({ name: candidate, mimeType, buffer: readFileSync(ref.path) });
   }
   const fileInput = page.locator("input[type='file']").first();
   try {
-    await fileInput.setInputFiles(refs);
+    await fileInput.setInputFiles(payloads);
   } catch {
-    for (const path of refs) {
-      await fileInput.setInputFiles(path);
+    for (const payload of payloads) {
+      await fileInput.setInputFiles(payload);
       await page.waitForTimeout(1500);
     }
   }

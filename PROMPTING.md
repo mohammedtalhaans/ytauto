@@ -11,12 +11,16 @@ This is a synthesis of current (May 2026) practitioner consensus across:
 
 If you only read one section, read [TL;DR rules of thumb](#tldr-rules-of-thumb).
 
-> **Pipeline architecture as of v0.2 (May 2026):** ideate now runs as **two passes** with `gpt-5.5` at high reasoning effort.
-> Pass 1 produces a global outline (title, story beats, characters, settings, **props**, **style bible**, **audio bible**).
-> Pass 2 turns the outline into per-segment Seedance prompts. The pipeline then automatically prepends the style bible, audio bible, and verbatim character descriptors to every segment prompt — so all clips share one look + one audio bed + one character identity, with zero per-segment drift.
+> **Pipeline architecture as of v0.3 (May 2026):** ideate now runs as **two passes** with `gpt-5.5` at high reasoning effort.
+> Pass 1 produces a global outline (title, **hookMoment**, story beats, characters, settings, **props**, **style bible**, **audio bible**).
+> Pass 2 turns the outline into per-segment Seedance prompts using **`@<refname>` Seedance 2.0 reference syntax** for asset binding. The pipeline then automatically prepends the style bible, audio bible, and verbatim character descriptors to every segment prompt — so all clips share one look + one audio bed + one character identity, with zero per-segment drift.
+> **Mandatory opening hook**: segment 1's first 3–5s is required to be a kinetic, eye-catching, scroll-stopping moment. Validated in pass 1 and executed in segment 1's opening timestamp block.
+> **Fast pacing default**: 3–5 timestamp blocks of 3–5s each per 15s segment, kinetic camera moves preferred over locked-off.
+> **`@<refname>` binding**: Refs are uploaded to Runway with their bare names (e.g. `leo.png`, `silver-locket.png`), so `@leo` and `@silver-locket` in the prompt text bind to the right asset.
 > Hard limit: **every final segment prompt is validated ≤3500 chars** (Runway's textarea cap) and defensively re-truncated at submit.
 > Artifacts run a **codex critique loop** — the generated PNG is scored by gpt-5.5 against the descriptor; score <7/10 triggers ONE regeneration with feedback.
 > First-frame generation is **mandatory for every segment** (no nulls), and includes character + setting + prop refs as multi-image input.
+> Prompt templates incorporate the **pexoai `seedance-2.0-prompter` skill** (atomic-element mapping: subject→asset, camera→text, scene→hybrid).
 
 ---
 
