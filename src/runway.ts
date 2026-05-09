@@ -333,16 +333,28 @@ function countImgLabels(body: string): number {
   return matches ? new Set(matches).size : 0;
 }
 
+// Hard limit Runway enforces on the prompt textarea. Mirrors MAX_PROMPT_CHARS
+// in src/types.ts. Defensive truncation here guarantees we never exceed it
+// even if a manually-edited manifest sneaks past ideate's validation.
+const RUNWAY_MAX_PROMPT_CHARS = 3500;
+
 async function fillPrompt(page: Page, prompt: string): Promise<void> {
+  let safePrompt = prompt;
+  if (safePrompt.length > RUNWAY_MAX_PROMPT_CHARS) {
+    console.warn(
+      `[runway] prompt is ${safePrompt.length} chars > ${RUNWAY_MAX_PROMPT_CHARS}; truncating to fit Runway's limit`
+    );
+    safePrompt = safePrompt.slice(0, RUNWAY_MAX_PROMPT_CHARS);
+  }
   const box = promptBox(page).first();
   await box.click({ timeout: 15000 });
   // Clear existing content
   await page.keyboard.press("Control+A").catch(() => undefined);
   await page.keyboard.press("Delete").catch(() => undefined);
   try {
-    await box.fill(prompt);
+    await box.fill(safePrompt);
   } catch {
-    await page.keyboard.insertText(prompt);
+    await page.keyboard.insertText(safePrompt);
   }
 }
 

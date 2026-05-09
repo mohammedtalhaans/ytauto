@@ -7,6 +7,8 @@ export interface CodexOptions {
   model: string;
   cwd?: string;
   timeoutMs?: number;
+  reasoningEffort?: "low" | "medium" | "high";
+  images?: string[];     // attach images for vision input (used by artifact critique)
 }
 
 export async function runCodexText(prompt: string, options: CodexOptions): Promise<string> {
@@ -20,9 +22,15 @@ export async function runCodexText(prompt: string, options: CodexOptions): Promi
     "--sandbox",
     "workspace-write",
     "--output-last-message",
-    outputPath,
-    "-"
+    outputPath
   ];
+  if (options.reasoningEffort) {
+    args.push("-c", `model_reasoning_effort=${options.reasoningEffort}`);
+  }
+  for (const image of options.images ?? []) {
+    args.push("-i", image);
+  }
+  args.push("-");
   try {
     await runProcess(codexCommand(), args, prompt, options.cwd ?? process.cwd(), options.timeoutMs ?? 600000);
     return readFileSync(outputPath, "utf8").trim();

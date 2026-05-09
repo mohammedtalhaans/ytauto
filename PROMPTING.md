@@ -11,6 +11,13 @@ This is a synthesis of current (May 2026) practitioner consensus across:
 
 If you only read one section, read [TL;DR rules of thumb](#tldr-rules-of-thumb).
 
+> **Pipeline architecture as of v0.2 (May 2026):** ideate now runs as **two passes** with `gpt-5.5` at high reasoning effort.
+> Pass 1 produces a global outline (title, story beats, characters, settings, **props**, **style bible**, **audio bible**).
+> Pass 2 turns the outline into per-segment Seedance prompts. The pipeline then automatically prepends the style bible, audio bible, and verbatim character descriptors to every segment prompt — so all clips share one look + one audio bed + one character identity, with zero per-segment drift.
+> Hard limit: **every final segment prompt is validated ≤3500 chars** (Runway's textarea cap) and defensively re-truncated at submit.
+> Artifacts run a **codex critique loop** — the generated PNG is scored by gpt-5.5 against the descriptor; score <7/10 triggers ONE regeneration with feedback.
+> First-frame generation is **mandatory for every segment** (no nulls), and includes character + setting + prop refs as multi-image input.
+
 ---
 
 ## TL;DR rules of thumb
@@ -32,11 +39,13 @@ If you only read one section, read [TL;DR rules of thumb](#tldr-rules-of-thumb).
 
 | Stage | Prompt source | What you can edit |
 |---|---|---|
-| `ideate` | [`prompts/ideate.md`](prompts/ideate.md) — codex template | The whole template — change the JSON shape, the example, the constraints |
+| `ideate` pass 1 | [`prompts/ideate-outline.md`](prompts/ideate-outline.md) — codex template (gpt-5.5 high) | The outline JSON shape, character/setting/prop description rules, style + audio bible spec |
+| `ideate` pass 2 | [`prompts/ideate-segments.md`](prompts/ideate-segments.md) — codex template (gpt-5.5 high) | The Seedance field-card format, timestamp-block rules, character budget |
 | `ideate` (per-project) | The `idea` string passed to `ytauto new "<idea>"` | Most leverage is here. Spend time on this. |
-| `artifacts` | Hardcoded prompts in [`src/stages/artifacts.ts`](src/stages/artifacts.ts) | The `buildPrompt()` function — adjust per-asset wording |
-| `frames` | Hardcoded prompts in [`src/stages/frames.ts`](src/stages/frames.ts) | The `prompt` arg to `generateImage()` — adjust the composition language |
-| `generate` | Each `manifest.json` `segments[i].prompt` | Edit the manifest after `ideate` to override what codex produced |
+| `ideate` (composition) | [`composeSegmentPrompt()` in `src/stages/ideate.ts`](src/stages/ideate.ts) | How the style bible, audio bible, and character descriptors get prepended to each segment's base prompt |
+| `artifacts` | Hardcoded prompts + critique in [`src/stages/artifacts.ts`](src/stages/artifacts.ts) | `buildPrompt()` per kind (character / setting / prop), critique threshold |
+| `frames` | Hardcoded prompts in [`src/stages/frames.ts`](src/stages/frames.ts) | The multi-ref preservation clauses and style-bible injection |
+| `generate` | Each `manifest.json` `segments[i].prompt` | Edit the manifest after `ideate` to override what codex produced — keep ≤3500 chars |
 
 After `ytauto new "..."`, **always read `script.md` and `manifest.json`** before running `ytauto run`. The 30 seconds you spend tuning a segment prompt saves 25 minutes of regeneration.
 

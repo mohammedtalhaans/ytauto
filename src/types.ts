@@ -5,10 +5,29 @@ export type Aspect = "9:16" | "16:9" | "1:1" | "4:3" | "3:4" | "21:9";
 export type Resolution = "720p" | "1080p";
 export type Model = "seedance-2" | "gen-4.5" | "kling-3" | "multi-shot" | "characters";
 
+// Hard cap on Runway's prompt input. Enforced at ideate (validation) and at
+// runway.ts (defensive truncation right before submit).
+export const MAX_PROMPT_CHARS = 3500;
+
 export interface Asset {
   name: string;
   description: string;
   imagePath?: string;
+}
+
+export interface StyleBible {
+  era: string;          // e.g. "contemporary 2020s"
+  lens: string;         // e.g. "35mm anamorphic, shallow depth of field"
+  grade: string;        // e.g. "warm teal-orange, slightly lifted blacks"
+  filmStock: string;    // e.g. "digital cinema, gentle film grain emulation"
+  motion: string;       // e.g. "handheld realism, sparing slow dolly-ins"
+}
+
+export interface AudioBible {
+  music: string;        // e.g. "solo piano + warm strings, 70 bpm, lyrical romantic theme in C major"
+  ambient: string;      // e.g. "soft urban hum, distant traffic, intermittent birdsong"
+  sfxMotif: string;     // e.g. "the ticking of an antique pocket watch — recurs as a leitmotif"
+  mixNote: string;      // e.g. "music underscored, ambient subtle, dialogue prominent"
 }
 
 export interface Segment {
@@ -19,7 +38,7 @@ export interface Segment {
   model: Model;
   resolution: Resolution;
   upscale: boolean;
-  refs: string[];                          // names of characters/settings to attach as references
+  refs: string[];                          // names of characters/settings/props to attach as references
   firstFrameDescription?: string;          // description for gpt-image-2 to render
   firstFrameImagePath?: string;            // populated by frames stage
   videoPath?: string;                       // populated by generate stage
@@ -32,6 +51,7 @@ export interface Manifest {
   idea: string;
   title: string;
   logline: string;
+  storyBeats?: string[];                   // populated by outline pass — one per segment
   createdAt: string;
   updatedAt: string;
   defaults: {
@@ -41,8 +61,11 @@ export interface Manifest {
     resolution: Resolution;
     upscale: boolean;
   };
+  style?: StyleBible;
+  audio?: AudioBible;
   characters: Asset[];
   settings: Asset[];
+  props: Asset[];                          // key objects (locket, letter, bouquet, etc.)
   segments: Segment[];
   stages: Record<StageName, { status: StageStatus; completedAt?: string; error?: string }>;
   finalPath?: string;

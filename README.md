@@ -3,19 +3,28 @@
 End-to-end pipeline that turns a one-line idea into a finished, multi-segment YouTube video — fully automated.
 
 ```
-"a man's morning routine in his city apartment, four 15-second scenes"
+"a one-minute love story, 4 scenes, contemporary indie cinema"
                             │
-                ▼ ideate (codex / GPT-5.5)
-   title, character, settings, per-segment prompts, first-frame descriptions
+              ▼ ideate pass 1 (codex / gpt-5.5 high)
+     outline: title, story beats, characters, settings, props,
+              style bible, audio bible
+                            │
+              ▼ ideate pass 2 (codex / gpt-5.5 high)
+     per-segment Seedance prompts (timestamp blocks,
+     2-4 shots each, mandatory first-frame descriptions),
+     style + audio + character descriptors auto-prepended,
+     every prompt validated ≤3500 chars
                             │
                 ▼ artifacts (gpt-image-2 via ChatGPT Plus)
-   one reference PNG per character + per setting
+     one ref PNG per character + setting + prop,
+     each scored by codex critique → regen once if <7/10
                             │
                 ▼ frames (gpt-image-2)
-   one first-frame PNG per segment, conditioned on character + setting refs
+     one first-frame PNG per segment, multi-ref edit
+     (character + setting + prop refs)
                             │
                 ▼ generate (Runway Seedance 2.0 via Playwright)
-   one MP4 per segment, up to 2 in parallel, optional 4K Topaz upscale
+     one MP4 per segment, up to 2 in parallel, 4K Topaz upscale
                             │
                 ▼ stitch (ffmpeg concat)
                             │
@@ -149,12 +158,29 @@ projects/<slug>/
   "idea": "the original one-liner",
   "title": "Codex-generated title",
   "logline": "Codex-generated one-line summary",
+  "storyBeats": ["...", "..."],
   "defaults": { "model": "seedance-2", "aspect": "9:16", "duration": 15, "resolution": "1080p", "upscale": true },
+  "style": {
+    "era": "contemporary 2020s indie cinema",
+    "lens": "35mm anamorphic, shallow DoF",
+    "grade": "warm teal-orange, lifted blacks",
+    "filmStock": "digital cinema, gentle grain",
+    "motion": "handheld realism with sparing slow dolly-ins"
+  },
+  "audio": {
+    "music": "solo piano + warm strings, 70 bpm, lyrical romantic theme in C major",
+    "ambient": "soft urban hum, distant traffic, occasional birdsong",
+    "sfxMotif": "muted antique pocket-watch tick — recurs each time the locket appears",
+    "mixNote": "music underscored, ambient subtle, foreground sound prominent"
+  },
   "characters": [
-    { "name": "man", "description": "...", "imagePath": "...artifacts/character-man.png" }
+    { "name": "alex", "description": "...", "imagePath": "...artifacts/character-alex.png" }
   ],
   "settings": [
     { "name": "kitchen", "description": "...", "imagePath": "...artifacts/setting-kitchen.png" }
+  ],
+  "props": [
+    { "name": "silver-locket", "description": "...", "imagePath": "...artifacts/prop-silver-locket.png" }
   ],
   "segments": [
     {

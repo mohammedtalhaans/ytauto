@@ -55,6 +55,7 @@ export function createManifest(slug: string, idea: string): Manifest {
     defaults: { ...DEFAULT_DEFAULTS },
     characters: [],
     settings: [],
+    props: [],
     segments: [],
     stages
   };
