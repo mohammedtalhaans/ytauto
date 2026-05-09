@@ -90,15 +90,18 @@ Beat 1 specifically should incorporate the hookMoment (the hook is segment 1's o
 
 ## Character description style (CRITICAL for cross-segment consistency)
 
-For every character, write 50–90 words covering ALL of these in one block:
+For every character, write **30–50 words** (target ~40) — tight, dense, identity-anchoring. Cover ALL of these compactly in one block:
 - exact age in years (not "young" or "old")
 - ethnicity + skin tone description
 - eye colour
-- hair colour, length, texture, style
-- complete clothing top-to-bottom (including footwear)
+- hair colour, length, texture, style (compress to 4–6 words: e.g. "black wavy chin-length tucked")
+- complete clothing top-to-bottom in one phrase (e.g. "matte charcoal armored jacket, cargo pants, white high-tops")
 - 1–2 distinguishing features (scar, glasses, tattoo, posture)
 
-This single descriptor is copied verbatim into every segment prompt that features the character. If you abbreviate it differently per segment, the character drifts. Be detailed and consistent.
+Tight phrasing example (~45 words):
+> "27yo Korean American man, light olive skin, dark brown eyes, black medium-length wavy hair tucked behind one ear; faded forest-green chore jacket over cream waffle-knit, slim black denim, brown Chelsea boots; thin tortoiseshell glasses, faint scar through left eyebrow, slight forward lean."
+
+This descriptor is copied verbatim into every segment prompt that features the character. **Tight is better than verbose** — the `@<name>` reference image is loading the visual identity; the text descriptor reinforces, it doesn't carry the full burden. Verbose descriptors eat the budget that should go to scene description.
 
 ## Setting description style
 
@@ -161,7 +164,7 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
     "..."
   ],
   "characters": [
-    { "name": "alex", "description": "28-year-old white American man, fair skin with light tan, blue-grey eyes, dark brown short tousled hair, clean-shaven, wearing a navy crewneck sweater over a white t-shirt, slim charcoal jeans, brown leather Chelsea boots; small silver chain visible at neckline, slight forward lean in posture." }
+    { "name": "alex", "description": "28yo white American man, fair skin with light tan, blue-grey eyes, dark brown short tousled hair, clean-shaven; navy crewneck over white tee, slim charcoal jeans, brown leather Chelsea boots; small silver chain at neckline, slight forward-lean posture." }
   ],
   "settings": [
     { "name": "apartment-kitchen", "description": "small modern Brooklyn apartment kitchen, white subway tile backsplash, butcher-block counter, brass faucet, single hanging Edison bulb, espresso machine on the left, late-morning sunlight through a half-open window. Warm white and soft amber tones." }

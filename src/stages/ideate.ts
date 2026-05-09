@@ -163,7 +163,7 @@ async function passSegmentsWithRetries(
   const settingNames = new Set(manifest.settings.map((s) => s.name));
 
   let extraInstructions = "";
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= 5; attempt++) {
     const prompt = template
       .replace("{{outlineJson}}", JSON.stringify(outline, null, 2))
       .replace("{{idea}}", manifest.idea)
@@ -213,23 +213,37 @@ async function passSegmentsWithRetries(
       return parsed.segments;
     }
 
-    // Build retry feedback.
+    // Build retry feedback. The override here is deliberately aggressive —
+    // when budget is tight we force pass 2 to use fewer blocks at lower word
+    // density rather than letting it hold the line on the per-block target.
     if (violations.length > 0) {
       const longest = violations.reduce((a, b) => (b.finalLen > a.finalLen ? b : a));
       const overheadEstimate = longest.finalLen - longest.baseLen;
-      const newBudget = Math.max(800, MAX_PROMPT_CHARS - overheadEstimate - 200);
+      const newBudget = Math.max(700, MAX_PROMPT_CHARS - overheadEstimate - 200);
+      // Block count + per-block word target tighten as budget gets tighter.
+      const targetBlocks = newBudget < 1200 ? 3 : newBudget < 1700 ? 3 : 4;
+      const wordTarget = newBudget < 1200 ? "30–45" : newBudget < 1700 ? "45–65" : "60–90";
       extraInstructions +=
-        `\n- Previous attempt had ${violations.length} segment(s) exceed the ${MAX_PROMPT_CHARS}-char limit AFTER auto-prepending style/audio/character blocks ` +
-        `(overhead measured: ~${overheadEstimate} chars). Tighten EVERY segment's base prompt to ≤${newBudget} chars. ` +
-        `Specifically too long: ${violations.map((v) => `"${v.name}" (final ${v.finalLen})`).join(", ")}.`;
-      options.log(`[ideate] pass 2 attempt ${attempt} had length violations; retrying with budget ≤${newBudget}`);
+        `\n\n## RETRY OVERRIDE (attempt ${attempt + 1})\n` +
+        `Previous attempt: ${violations.length} segment(s) exceeded the ${MAX_PROMPT_CHARS}-char composed limit. ` +
+        `Auto-prepended overhead is ~${overheadEstimate} chars (style + audio bibles + verbatim character descriptors).\n\n` +
+        `**This attempt's hard constraints — these OVERRIDE the per-block guidance in the main template:**\n` +
+        `- Each segment's base prompt: **≤${newBudget} chars**\n` +
+        `- Use exactly **${targetBlocks} timestamp blocks per segment** (not more)\n` +
+        `- Each block: **${wordTarget} words** (not the 60-150 default — budget doesn't allow it here)\n` +
+        `- Keep every block specific and detail-dense — just describe LESS per shot, not LESS specifically. Cut secondary actions/details, keep the primary action with body mechanics + camera + one anchor detail.\n` +
+        `- Footer stays minimal: SFX timestamps + music timing + negatives. No restated audio bible.\n` +
+        `- Spectacle moments still required — just one beat per moment, not elaborate buildup chains.\n\n` +
+        `Specifically too long last time: ${violations.map((v) => `"${v.name}" (final ${v.finalLen})`).join(", ")}.`;
+      options.log(`[ideate] pass 2 attempt ${attempt} had length violations; retrying — ${targetBlocks} blocks × ${wordTarget} words, budget ≤${newBudget}`);
     } else if (extraInstructions) {
       options.log(`[ideate] pass 2 attempt ${attempt} had structural issues; retrying`);
     }
   }
   throw new Error(
-    `[ideate] pass 2 failed to produce valid segments within prompt limits after 3 attempts. ` +
-    `See debug output. Consider reducing segment count or simplifying the idea.`
+    `[ideate] pass 2 failed to produce valid segments within prompt limits after 5 attempts. ` +
+    `Most likely cause: too many characters per segment + verbose descriptors. ` +
+    `Consider: editing manifest character descriptions to be tighter (~30 words each), reducing co-presence of multiple characters per segment via story restructure, or running again.`
   );
 }
 
@@ -262,12 +276,16 @@ function composeSegmentPrompt(args: ComposeArgs): string {
       charBlocks.push(`[${ref}]: ${desc}`);
     }
   }
-  const styleLine = `Style: ${args.style.lens}; ${args.style.grade}; ${args.style.motion}.`;
+  // Style line: lens + grade only. Motion philosophy (handheld vs locked-off)
+  // is already implied by every segment's per-block camera move language, so
+  // prepending it again is redundant cost.
+  const styleLine = `Style: ${args.style.lens}; ${args.style.grade}.`;
   // Audio bible re-prepended (was removed earlier when it duplicated pass 2's
   // verbose footer; pass 2's footer is now slim — just SFX/music timestamps —
   // so prepending the bible here gives the cross-segment coherent music + SFX
-  // motif at much lower per-segment cost).
-  const audioLine = `Audio bed: music — ${args.audio.music}; ambient — ${args.audio.ambient}; recurring SFX motif — ${args.audio.sfxMotif}; mix — ${args.audio.mixNote}.`;
+  // motif at much lower per-segment cost). Compact format — drop sfxMotif
+  // (it's expressed in per-segment SFX events anyway) and use minimal labels.
+  const audioLine = `Audio: ${args.audio.music}; ambient — ${args.audio.ambient}; ${args.audio.mixNote}.`;
   const parts: string[] = [styleLine, audioLine];
   if (charBlocks.length > 0) {
     parts.push(charBlocks.join("\n"));

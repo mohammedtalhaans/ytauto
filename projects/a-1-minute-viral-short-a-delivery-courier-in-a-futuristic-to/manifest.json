@@ -4,7 +4,7 @@
   "title": "60 Seconds to Shibuya Zero",
   "logline": "A futuristic Tokyo courier finds a time-bending package in her bag and has one minute to deliver it before Shibuya collapses into a permanent frozen moment.",
   "createdAt": "2026-05-09T21:42:48.508Z",
-  "updatedAt": "2026-05-09T22:22:24.399Z",
+  "updatedAt": "2026-05-09T23:20:31.372Z",
   "defaults": {
     "model": "seedance-2",
     "aspect": "9:16",
@@ -84,7 +84,9 @@
         "mika-courier-bag"
       ],
       "firstFrameDescription": "Extreme close-up portrait frame: @chrono-cube is half-emerged from @mika-courier-bag above wet black asphalt, inches from impact, red countdown glow visible through black glass seams. @mika-sato's gloved hand and sneaker edge frame it. Heavy rain, cyan-magenta neon reflections, urgent kinetic stillness.",
-      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\01-shibuya-zero-freeze.png"
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\01-shibuya-zero-freeze.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\segments\\01-shibuya-zero-freeze.mp4",
+      "videoStatus": "done"
     },
     {
       "name": "02-service-alley-pursuit",
@@ -101,7 +103,9 @@
         "chrono-cube"
       ],
       "firstFrameDescription": "Wide vertical alley composition: @mika-sato is mid-sprint in @neon-service-alley, clutching @chrono-cube low near her ribs. Steam pipes, delivery lockers, puddled concrete, red lanterns, and cobalt maintenance strips crowd the frame. Wet reflections and neon bloom create urgent cyberpunk chase energy.",
-      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\02-service-alley-pursuit.png"
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\02-service-alley-pursuit.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\segments\\02-service-alley-pursuit.mp4",
+      "videoStatus": "done"
     },
     {
       "name": "03-monorail-rooftop-choice",
@@ -118,7 +122,9 @@
         "chrono-cube"
       ],
       "firstFrameDescription": "Wide vertical frame on @monorail-rooftop-platform: @mika-sato stands near dead ticket gates with @chrono-cube clutched to her chest, rain cutting across cracked safety glass. Rusted yellow railings, wind-torn ad banners, distant towers, acid-green beacons, and deep violet storm light frame the risky height.",
-      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\03-monorail-rooftop-choice.png"
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\03-monorail-rooftop-choice.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\segments\\03-monorail-rooftop-choice.mp4",
+      "videoStatus": "done"
     },
     {
       "name": "04-clock-tower-handoff",
@@ -136,7 +142,9 @@
         "ren-wrist-console"
       ],
       "firstFrameDescription": "Wide vertical interior: @mika-sato is low and off-balance at the threshold of @clock-tower-shrine, gripping @chrono-cube toward the central circular altar. Brass gears glow behind glass, server racks pulse blue, red prayer strips hang overhead, and amber clocklight cuts through rain mist.",
-      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\04-clock-tower-handoff.png"
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\04-clock-tower-handoff.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\segments\\04-clock-tower-handoff.mp4",
+      "videoStatus": "done"
     }
   ],
   "stages": {
@@ -153,10 +161,12 @@
       "completedAt": "2026-05-09T22:22:24.398Z"
     },
     "generate": {
-      "status": "running"
+      "status": "done",
+      "completedAt": "2026-05-09T23:20:30.036Z"
     },
     "stitch": {
-      "status": "pending"
+      "status": "done",
+      "completedAt": "2026-05-09T23:20:31.372Z"
     }
   },
   "hookMoment": "At 0s, a glowing black cube bursts out of Mika's courier bag in extreme close-up, slams into wet asphalt, and makes every raindrop, scooter, pedestrian, and neon reflection freeze mid-motion except Mika, while a red 60-second countdown ignites across the cube's glass seams.",
@@ -178,5 +188,6 @@
     "ambient": "continuous rainy Tokyo night bed, distant traffic wash, electric billboard hum, passing drones, muffled train rumbles",
     "sfxMotif": "the sharp crystalline tick of the chrono-cube countdown, recurring whenever time bends or the package changes hands",
     "mixNote": "music stays urgent and continuous, countdown ticks and time-freeze impacts punch forward, city rain and neon hum sit underneath"
-  }
+  },
+  "finalPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\final.mp4"
 }
