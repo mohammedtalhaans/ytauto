@@ -239,13 +239,24 @@ interface ComposeArgs {
 }
 
 /**
- * Final segment prompt = style block + audio block + character descriptors
+ * Final segment prompt = condensed style preamble + character descriptors
  * (verbatim per ref) + base prompt from pass 2.
  *
- * This is what actually gets fed to Runway. The style + audio blocks are
- * identical across every segment so the stitched video has a consistent
- * look + audio bed; the character descriptors are identical across every
- * segment that features the character so identity doesn't drift.
+ * Design goal: the bulk of the prompt's character budget must go to the
+ * scene-by-scene timestamp blocks (that's the part Seedance attends to most
+ * heavily). Overhead is therefore minimized:
+ *
+ *  - Style preamble: ONE short line (lens / grade / motion only — the
+ *    cinematographic anchors). Era + filmStock dropped from the preamble
+ *    because they're well captured by the [Genre/style cue] opener pass 2
+ *    already writes at the top of each base prompt.
+ *  - Audio bible NOT prepended. The base prompt's `Sound:` / `Music:` lines
+ *    already restate ambient + music VERBATIM from audio.ambient/audio.music,
+ *    so a separate "Global audio bed:" preamble was pure duplication.
+ *  - Character descriptors: kept verbatim (50-90 words each) per character
+ *    that appears in the segment — these are non-negotiable for cross-segment
+ *    identity. The descriptor block goes BEFORE the base prompt so the
+ *    model has identity loaded before reading actions.
  */
 function composeSegmentPrompt(args: ComposeArgs): string {
   const charBlocks: string[] = [];
@@ -255,9 +266,8 @@ function composeSegmentPrompt(args: ComposeArgs): string {
       charBlocks.push(`[${ref}]: ${desc}`);
     }
   }
-  const styleLine = `Style: ${args.style.era}; ${args.style.lens}; ${args.style.grade}; ${args.style.filmStock}; ${args.style.motion}.`;
-  const audioLine = `Global audio bed: music — ${args.audio.music}; ambient — ${args.audio.ambient}; recurring SFX motif — ${args.audio.sfxMotif}; mix — ${args.audio.mixNote}.`;
-  const parts = [styleLine, audioLine];
+  const styleLine = `Style: ${args.style.lens}; ${args.style.grade}; ${args.style.motion}.`;
+  const parts: string[] = [styleLine];
   if (charBlocks.length > 0) {
     parts.push(charBlocks.join("\n"));
   }

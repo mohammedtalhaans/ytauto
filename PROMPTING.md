@@ -17,6 +17,7 @@ If you only read one section, read [TL;DR rules of thumb](#tldr-rules-of-thumb).
 > **Mandatory opening hook**: segment 1's first 3–5s is required to be a kinetic, eye-catching, scroll-stopping moment. Validated in pass 1 and executed in segment 1's opening timestamp block.
 > **Fast pacing default**: 3–5 timestamp blocks of 3–5s each per 15s segment, kinetic camera moves preferred over locked-off.
 > **`@<refname>` binding**: Refs are uploaded to Runway with their bare names (e.g. `leo.png`, `silver-locket.png`), so `@leo` and `@silver-locket` in the prompt text bind to the right asset.
+> **Scene-description-dominant composition**: Composition only prepends a short style line (lens / grade / motion) + verbatim character descriptors. The audio bible is NOT prepended — it's already restated verbatim in every segment's `Sound:` / `Music:` lines, so prepending it was duplication. This frees ~600 chars per segment for the timestamp blocks (the part Seedance attends to most heavily). Pass 2's base-prompt budget is now ≤2900 chars, with explicit instruction to spend 70–80% of the prompt on the timestamp blocks themselves.
 > Hard limit: **every final segment prompt is validated ≤3500 chars** (Runway's textarea cap) and defensively re-truncated at submit.
 > Artifacts run a **codex critique loop** — the generated PNG is scored by gpt-5.5 against the descriptor; score <7/10 triggers ONE regeneration with feedback.
 > First-frame generation is **mandatory for every segment** (no nulls), and includes character + setting + prop refs as multi-image input.

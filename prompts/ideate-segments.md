@@ -50,10 +50,22 @@ A first-frame reference is also auto-attached as `@first-frame`. You may explici
 
 ## Constraints — HARD limits
 
-- **Total prompt length per segment ≤ 2400 characters.** This is the prompt YOU write here. The pipeline will prepend ~700–1000 chars of style + audio + character descriptors automatically; the combined prompt must stay under Runway's 3500-char limit.
+- **Total prompt length per segment ≤ 2900 characters.** This is the prompt YOU write here. The pipeline will prepend a short style line + the verbatim character descriptors (~300–600 chars depending on character count); the combined prompt must stay under Runway's 3500-char limit.
 - 5–15 second segment durations only.
 - 9:16 portrait, 720p, Seedance 2.0.
 - Do NOT include character / setting / prop descriptions inside the prompt — those are auto-prepended by the pipeline. Refer to assets via `@<name>` only.
+
+## CRITICAL: scene description must dominate the prompt
+
+Seedance attends most heavily to the **timestamp blocks** — the scene-by-scene physical description of what happens, where, and how the camera moves. Audio lines, music cues, and the negatives footer get progressively less attention.
+
+Therefore allocate the segment's character budget like this:
+
+- **~70–80% of the prompt is the timestamp blocks themselves.** Multiple verbs, multiple specific physical details, body language, environmental detail, lighting cues. Don't write "she runs" — write "she sprints frame-right across wet asphalt, scattering frozen raindrops, neon reflections smearing past her shoulder."
+- **~10–15% is the Sound: / Music: / mix lines** — restate audio bible verbatim, but no need to elaborate.
+- **~5–10% is the negatives footer** — keep it tight, don't expand.
+
+If you have headroom, USE IT inside the timestamp blocks: more specific physical detail per shot, more concrete environment notes, more precise camera language. Don't pad the audio block or the negatives. Don't restate things the auto-prepended descriptors already cover (character appearance, setting layout). Spend the budget on what the timestamp blocks describe — what physically happens this second.
 
 ## Segment prompt format (Seedance 2.0 field-card — MANDATORY)
 
