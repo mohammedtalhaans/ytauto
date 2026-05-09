@@ -244,24 +244,15 @@ interface ComposeArgs {
 }
 
 /**
- * Final segment prompt = condensed style preamble + character descriptors
- * (verbatim per ref) + base prompt from pass 2.
+ * Final segment prompt = condensed style + audio preamble + character
+ * descriptors (verbatim per ref) + base prompt from pass 2.
  *
  * Design goal: the bulk of the prompt's character budget must go to the
- * scene-by-scene timestamp blocks (that's the part Seedance attends to most
- * heavily). Overhead is therefore minimized:
- *
- *  - Style preamble: ONE short line (lens / grade / motion only — the
- *    cinematographic anchors). Era + filmStock dropped from the preamble
- *    because they're well captured by the [Genre/style cue] opener pass 2
- *    already writes at the top of each base prompt.
- *  - Audio bible NOT prepended. The base prompt's `Sound:` / `Music:` lines
- *    already restate ambient + music VERBATIM from audio.ambient/audio.music,
- *    so a separate "Global audio bed:" preamble was pure duplication.
- *  - Character descriptors: kept verbatim (50-90 words each) per character
- *    that appears in the segment — these are non-negotiable for cross-segment
- *    identity. The descriptor block goes BEFORE the base prompt so the
- *    model has identity loaded before reading actions.
+ * scene-by-scene timestamp blocks. Pipeline-injected preamble takes care
+ * of the "boilerplate" — style bible, audio bible, character identity —
+ * leaving pass 2 to spend its budget on dense per-block physical
+ * description. Pass 2 is told NOT to restate audio/style; it writes only
+ * SFX timestamps + music timing in its footer.
  */
 function composeSegmentPrompt(args: ComposeArgs): string {
   const charBlocks: string[] = [];
@@ -272,7 +263,12 @@ function composeSegmentPrompt(args: ComposeArgs): string {
     }
   }
   const styleLine = `Style: ${args.style.lens}; ${args.style.grade}; ${args.style.motion}.`;
-  const parts: string[] = [styleLine];
+  // Audio bible re-prepended (was removed earlier when it duplicated pass 2's
+  // verbose footer; pass 2's footer is now slim — just SFX/music timestamps —
+  // so prepending the bible here gives the cross-segment coherent music + SFX
+  // motif at much lower per-segment cost).
+  const audioLine = `Audio bed: music — ${args.audio.music}; ambient — ${args.audio.ambient}; recurring SFX motif — ${args.audio.sfxMotif}; mix — ${args.audio.mixNote}.`;
+  const parts: string[] = [styleLine, audioLine];
   if (charBlocks.length > 0) {
     parts.push(charBlocks.join("\n"));
   }
