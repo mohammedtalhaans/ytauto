@@ -20,56 +20,136 @@ src/
 ├── pool.ts                   # 2-tab worker pool with submit-stagger + retry
 ├── types.ts                  # manifest schema + DEFAULT_DEFAULTS
 └── stages/
-    ├── ideate.ts             # codex → manifest.characters/settings/segments
-    ├── artifacts.ts          # imagegen → reference PNG per character/setting
-    ├── frames.ts             # imagegen → first-frame PNG per segment
+    ├── ideate.ts             # 2-pass codex → outline + segments + auto-composition
+    ├── artifacts.ts          # imagegen → ref PNG per character/setting/prop + critique loop
+    ├── frames.ts             # imagegen → first-frame PNG per segment (mandatory, multi-ref)
     ├── generate.ts           # warmup + pool → MP4 per segment
     └── stitch.ts             # ffmpeg concat → final.mp4
 ```
 
 ---
 
-## Stage 1: ideate
+## Stage 1: ideate (two passes)
 
 **Input:** the user's one-line idea + `--segments N`.
-**Output:** writes the bulk of `manifest.json` and a human-readable `script.md`.
+**Output:** writes the bulk of `manifest.json` (title, logline, story beats, characters, settings, props, style + audio bibles, segments) and a human-readable `script.md`.
 
-[`src/stages/ideate.ts`](src/stages/ideate.ts) renders [`prompts/ideate.md`](prompts/ideate.md) with `{{idea}}` and `{{segmentCount}}`, then calls `runCodexText(prompt, { model: "gpt-5.5" })`.
+Ideate runs as **two sequential codex calls**, both `gpt-5.5` with `model_reasoning_effort=high`. Splitting it lets pass 1 nail down the global plan (which all segments must share) before pass 2 fills in per-segment details — preventing cross-segment drift in style/audio/identity.
 
-[`src/codex.ts`](src/codex.ts) spawns:
+### Pass 1 — outline ([`prompts/ideate-outline.md`](prompts/ideate-outline.md))
+
+Renders the template with `{{idea}}` and `{{segmentCount}}`, then calls:
 
 ```
-codex exec --model gpt-5.5 --skip-git-repo-check --sandbox workspace-write --output-last-message <tmpfile> -
+codex exec --model gpt-5.5 -c model_reasoning_effort=high \
+           --skip-git-repo-check --sandbox workspace-write \
+           --output-last-message <tmpfile> -
 ```
 
-Writes the prompt to stdin, reads the model's last message from `<tmpfile>`. The file is the cleanest way to get the model output without parsing intermixed reasoning logs.
-
-The prompt asks for **strict JSON** matching this shape:
+Asks for **strict JSON** matching this shape:
 
 ```jsonc
 {
   "title": "...",
   "logline": "...",
-  "characters": [{ "name": "knight", "description": "..." }],
-  "settings":   [{ "name": "kitchen", "description": "..." }],
-  "segments":   [{ "name": "01-arrival", "prompt": "...", "duration": 15,
-                   "refs": ["knight", "kitchen"],
-                   "firstFrameDescription": "..." }]
+  "storyBeats": ["beat 1", "beat 2", "..."],   // one per intended segment
+  "characters": [{ "name": "alex", "description": "50-90 word identity block" }],
+  "settings":   [{ "name": "apartment-kitchen", "description": "30-60 word setting" }],
+  "props":      [{ "name": "silver-locket", "description": "25-50 word prop" }],
+  "style": { "era", "lens", "grade", "filmStock", "motion" },   // global style bible
+  "audio": { "music", "ambient", "sfxMotif", "mixNote" }        // global audio bible
 }
 ```
 
-`extractJson()` in [`src/codex.ts`](src/codex.ts) finds the first `{`/`[` and the last matching closer to be tolerant of fenced output (```` ```json …``` ````) or stray prose.
+The outline JSON is parsed, validated (titles, beats, style bible, audio bible all required), and stored in the manifest. The bibles are the central trick: they describe ONE coherent look + ONE coherent audio bed that every segment will inherit verbatim.
 
-We **don't** require the LLM to set per-segment `aspect`, `model`, `resolution`, `upscale` — those inherit from `manifest.defaults` at load time. This keeps the prompt small and lets you change defaults without re-running ideate.
+### Pass 2 — segments ([`prompts/ideate-segments.md`](prompts/ideate-segments.md))
+
+Receives the entire pass-1 outline JSON as input plus the segment-duration target. Codex emits one segment per `storyBeats[i]` in order. Each segment is just:
+
+- `prompt` — Seedance field-card with 2–4 timestamp blocks summing exactly to the segment duration
+- `refs` — names from the outline that appear on screen (characters + setting + props)
+- `firstFrameDescription` — REQUIRED, no nulls — a still-frame composition for gpt-image-2 to render
+- `duration` — within 5–15s
+
+Critically, pass 2 is told **NOT** to include character/setting/prop descriptions inside the prompt. The pipeline auto-prepends them in the next step. Pass 2 keeps the base prompt tight — under a budget the pipeline calculates so the final composed prompt stays ≤3500 chars.
+
+### Composition — `composeSegmentPrompt()` in [`src/stages/ideate.ts`](src/stages/ideate.ts)
+
+After pass 2 returns, every segment's final Runway prompt is built as:
+
+```
+Style: <era>; <lens>; <grade>; <filmStock>; <motion>.
+Global audio bed: music — <music>; ambient — <ambient>; SFX motif — <sfxMotif>; mix — <mixNote>.
+
+[<character-name>]: <verbatim 50-90 word identity block>
+[<another-character>]: <verbatim>
+
+<the field-card prompt from pass 2, with timestamp blocks and segment-specific Sound:/Music: lines>
+```
+
+The style line, the global audio line, and the verbatim character descriptors are **identical across every segment** that includes them. This is what eliminates drift: when Seedance gets the same style+audio+identity strings four times in a row, the four output clips look like one film, not four random renders.
+
+### 3500-char hard limit
+
+Runway's prompt textarea caps at 3500 characters. Composed prompts are validated:
+
+```
+for each segment:
+  composed = composeSegmentPrompt(...)
+  if composed.length > 3500: collect violation
+```
+
+If any segment exceeds the limit, pass 2 is **retried** (up to 3 attempts total) with appended instructions like:
+*"Previous attempt had segment 'X' at 3812 chars after auto-prepending ~900 chars of style/audio/character blocks. Tighten EVERY segment's base prompt to ≤2500 chars."*
+
+If 3 attempts all fail, ideate throws — you see exactly which segment overshot and by how much.
+
+A defensive truncation also lives in `runway.ts → fillPrompt()` so even a manually-edited manifest can never blow past 3500 at submit time.
+
+### Model + reasoning effort
+
+Both passes use `gpt-5.5` with `model_reasoning_effort=high` (passed via `-c`). The high reasoning is essential for pass 2 — it has to plan timestamp arithmetic, choose camera moves that fit the action density, AND keep the result under a tight character budget. Lower reasoning produces sloppy budget violations.
 
 ---
 
 ## Stage 2: artifacts
 
-**Input:** `manifest.characters[]` and `manifest.settings[]` from ideate.
+**Input:** `manifest.characters[]`, `manifest.settings[]`, and `manifest.props[]` from ideate.
 **Output:** one PNG per asset under `projects/<slug>/artifacts/`.
 
-For each asset whose `imagePath` is missing, [`src/stages/artifacts.ts`](src/stages/artifacts.ts) builds a prompt (different wording for character vs setting) and calls [`src/imagegen.ts`](src/imagegen.ts).
+Three asset kinds, each with a distinct `buildPrompt()` template:
+
+- **character** — full-body reference sheet, 85mm portrait lens feel, neutral standing pose, plain light-grey seamless background, 2:3 portrait
+- **setting** — empty interior photograph (no people), 28mm equivalent eye-level, 16:9
+- **prop** — product-photo style, 100mm macro lens feel, plain neutral background, 1:1 square
+
+The prompts also inject a hint from the global style bible (`Lens feel: <style.lens>. Tonal palette: <style.grade>.`) so artifacts already match the look the videos will be rendered in.
+
+For each asset whose `imagePath` is missing, [`src/stages/artifacts.ts`](src/stages/artifacts.ts) calls [`src/imagegen.ts`](src/imagegen.ts) — then runs the **critique loop** (next subsection) before accepting the result.
+
+### The critique loop
+
+A wrong-ethnicity, wrong-hair-colour, or missing-engraving artifact will silently corrupt every downstream segment that references it (because frames + segments inherit the artifact's appearance). To catch this before it propagates, every freshly generated artifact is scored by codex BEFORE we move on.
+
+```
+generate image
+critique:
+  spawn `codex exec -m gpt-5.5 -c model_reasoning_effort=medium -i <generated.png> -`
+  prompt: "Compare image to descriptor; checklist for kind=character is age/ethnicity/eyes/hair/clothing/distinguishing/pose/background. Output JSON {score:1-10, issues:[...]}"
+if score < 7:
+  log + delete the rejected PNG
+  rebuild prompt with appended: "Fix these specific issues from the previous attempt: <issues joined>."
+  generate ONCE more, accept the result
+else:
+  accept
+```
+
+Codex with `-i <png>` attaches the image as vision input, so the model can actually see what was produced. We use medium reasoning here — full high is overkill for a checklist comparison, and it'd nearly double the artifact-stage runtime.
+
+The critique soft-fails open: if codex itself errors, the image is accepted as-is and we log a warning. Worst case, we lose the safety net for that one artifact.
+
+To disable the critique entirely (e.g. while debugging) pass `critique: false` in `ArtifactsOptions`. Default is on.
 
 ### imagegen.ts — calling gpt-image-2 without an API key
 
@@ -105,12 +185,24 @@ If `codex login` is on a free-tier ChatGPT account, Codex returns *"I can't gene
 
 ## Stage 3: frames
 
-**Input:** segments with `firstFrameDescription` set + the matching character/setting reference PNGs.
+**Input:** every segment in the manifest (each has a mandatory `firstFrameDescription` from ideate pass 2) + the matching character / setting / prop reference PNGs.
 **Output:** one PNG per segment under `projects/<slug>/frames/`.
 
-Same `imagegen.ts` mechanism. The difference: we pass the character + setting reference PNGs as `-i` flags so Codex's `imagegen` does **image-to-image** composition. The frame stays consistent with the established character + room.
+Same `imagegen.ts` mechanism. The difference: we pass **all** referenced artifacts as `-i` flags simultaneously — characters AND settings AND props — so Codex's `imagegen` does multi-image-to-image composition.
 
-The first-frame is later attached to Runway as one of the references for the video — so each video segment starts visually grounded in its setting.
+The constructed prompt has four parts:
+
+1. **Per-image role labels** — `Image 1: character reference — alex / Image 2: setting reference — apartment-kitchen / Image 3: prop reference — silver-locket`. gpt-image-2 reads these as explicit role tags for each input.
+2. **The composition instruction** — verbatim `firstFrameDescription` from the manifest.
+3. **Per-kind preservation clauses** — split by ref kind:
+   - characters: *"Preserve from the character reference(s) (alex): face, hair, clothing, body proportions — exactly. Do not redesign the character."*
+   - settings: *"Preserve from the setting reference(s) (apartment-kitchen): room layout, furniture placement, lighting direction, color palette — exactly."*
+   - props: *"Preserve from the prop reference(s) (silver-locket): exact shape, material, colour, engravings or marks — pixel-faithful. The same physical object must appear."*
+4. **Style-bible match** — `Match the global look: <lens>. Grade: <grade>. Stock: <filmStock>.` So the first frame already inherits the project's grade and lens feel.
+
+Frames are now MANDATORY — pass 2 of ideate refuses to emit `firstFrameDescription: null`, so every segment gets one. The first-frame is then attached to Runway alongside the artifact refs at generate time, so the video starts visually anchored.
+
+If you genuinely want a segment to start in motion (no anchored first frame), manually edit the manifest to set `firstFrameDescription` to empty/missing AND delete `firstFrameImagePath` — the frames stage will skip it.
 
 ---
 

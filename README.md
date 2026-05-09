@@ -137,12 +137,13 @@ Every video lives under one folder, fully self-contained:
 projects/<slug>/
 ├── manifest.json         # canonical state (every stage reads/writes it)
 ├── manifest.json.bak     # snapshot at project creation
-├── script.md             # human-readable script written by ideate
+├── script.md             # human-readable script: title, style+audio bibles, beats, segment prompts
 ├── artifacts/
-│   ├── character-<name>.png    # one per character
-│   └── setting-<name>.png      # one per setting
+│   ├── character-<name>.png    # one per character (2:3 portrait reference sheet)
+│   ├── setting-<name>.png      # one per setting (16:9 empty interior)
+│   └── prop-<name>.png         # one per key prop (1:1 product-style ref)
 ├── frames/
-│   └── <seg-name>.png          # one per segment (first-frame still)
+│   └── <seg-name>.png          # one per segment (first-frame still, MANDATORY)
 ├── segments/
 │   └── <seg-name>.mp4          # one per segment (Runway output, optionally 4K)
 ├── debug-out/                  # screenshots when something fails
@@ -191,8 +192,8 @@ projects/<slug>/
       "model": "seedance-2",
       "resolution": "1080p",
       "upscale": true,
-      "refs": ["man", "kitchen"],            // names from characters[]/settings[]
-      "firstFrameDescription": "...",         // null if no custom first frame
+      "refs": ["alex", "apartment-kitchen", "silver-locket"],   // names from characters[]/settings[]/props[]
+      "firstFrameDescription": "...",         // mandatory — every segment gets one
       "firstFrameImagePath": "...frames/01-coffee.png",
       "videoStatus": "pending|done|failed",
       "videoPath": "...segments/01-coffee.mp4",
@@ -214,18 +215,52 @@ projects/<slug>/
 
 ---
 
+## How coherence is enforced (style + audio + identity)
+
+The single biggest threat to a stitched multi-segment video is **drift** — the character's hair color shifts, the music genre changes between clips, the grade jumps from warm to cold, the apartment is suddenly a different layout. The pipeline fights this on three axes:
+
+1. **Style bible** — `manifest.style = { era, lens, grade, filmStock, motion }` is generated once in pass 1 of ideate. The composition step automatically prepends a `Style: <era>; <lens>; <grade>; <filmStock>; <motion>.` line to **every** segment prompt, identical text every time. So all 4 clips share one look.
+2. **Audio bible** — `manifest.audio = { music, ambient, sfxMotif, mixNote }` works the same way. Seedance 2.0 generates audio per-clip from the prompt; by feeding the same `music` and `ambient` strings to every clip, the four audio tracks sound like one continuous bed when stitched. The `sfxMotif` is a recurring leitmotif (a ticking watch, a wind chime) that ties beats together.
+3. **Verbatim character descriptors** — every character has a 50–90 word identity block (age, ethnicity, eyes, hair, complete clothing, distinguishing marks). Whenever a segment references that character, the EXACT SAME description is prepended to the prompt — never paraphrased. Same string in → same face out (within Seedance's identity-stability range).
+
+Pass 2 of ideate is told NOT to include these descriptions in its segment prompts. It writes only the action/camera/audio field-card. The pipeline does the prepending after the fact. This is what makes the design retry-safe: edit a character description in the manifest, and every segment's prompt updates automatically on the next stage run.
+
+The same bibles also seed the artifact and first-frame stages: artifact prompts inherit `lens` + `grade` hints, and first-frame prompts inherit the full style cue plus per-kind preservation clauses for character / setting / prop refs.
+
+### Hard 3500-character cap
+
+Runway's prompt textarea is capped at 3500 characters. After composition, every segment prompt is validated against this. If any segment overshoots (because pass 2 was too verbose), the pipeline retries pass 2 up to 2 more times with feedback like *"segment X was 3812 chars after auto-prepending ~900 chars of style/audio/character; tighten every base prompt to ≤2500 chars."* If 3 attempts all fail, ideate errors out and tells you which segment broke. A defensive truncation also lives in `runway.ts → fillPrompt()` so a manually-edited manifest can never exceed the limit at submit time.
+
+### Artifact critique loop
+
+After each artifact is generated, codex (gpt-5.5 vision input via `-i <png>`) scores the result 1–10 against the original descriptor — checking age, ethnicity, eye color, hair, clothing top-to-bottom, distinguishing marks, etc. Score below 7 triggers ONE regeneration with concrete fix-this feedback. This catches the "wrong ethnicity" / "missing engraving on the locket" failures that would otherwise silently poison every downstream segment.
+
+To turn it off (e.g. when iterating quickly): edit `src/stages/artifacts.ts` and pass `critique: false` in `ArtifactsOptions`, or let it run — it adds ~30s per artifact.
+
+### Mandatory first frames
+
+Every segment gets a first-frame still rendered by gpt-image-2 from the segment's `firstFrameDescription`, conditioned on the segment's character + setting + prop reference images simultaneously. The frame is then attached to Runway alongside the same artifact refs, so each video starts visually anchored. Pass 2 of ideate refuses to emit `firstFrameDescription: null` — every segment is forced through this anchor.
+
+If you genuinely want a segment to start mid-motion with no anchor, you can manually clear `firstFrameDescription` in the manifest and delete `firstFrameImagePath`; the frames stage will skip it.
+
+---
+
 ## Editing between stages
 
 The whole point of the manifest-driven design is that you can intervene between stages.
 
-- Don't like the script? Edit `segments[i].prompt`, then `ytauto run <slug>` will pick up where it left off.
-- Want a segment shorter? Change `segments[i].duration` to 4-15.
-- Want one specific segment in 16:9 but the rest in 9:16? Change just that segment's `aspect`.
-- Want to swap a generated character image for one you drew yourself? Drop your file at `artifacts/character-<name>.png`, set `characters[i].imagePath` accordingly. The next run will use it as a reference.
-- Want to skip a first-frame for a specific segment? Set its `firstFrameDescription` to null **and** delete `firstFrameImagePath`.
-- Disable the Topaz upscale for a single segment? Set `segments[i].upscale: false` and re-run generate (delete the existing mp4 if you want to re-do it).
+- **Don't like the script?** Edit `segments[i].prompt`, then `ytauto run <slug>` will pick up where it left off. Keep the result ≤3500 chars.
+- **Want a segment shorter?** Change `segments[i].duration` to 4-15.
+- **Want one specific segment in 16:9 but the rest in 9:16?** Change just that segment's `aspect`.
+- **Want to swap a generated character image for one you drew yourself?** Drop your file at `artifacts/character-<name>.png`, set `characters[i].imagePath` accordingly. The next run will use it as a reference.
+- **Want to swap a prop?** Same pattern — `artifacts/prop-<name>.png` + `props[i].imagePath`.
+- **Want to globally re-grade everything?** Edit `manifest.style.grade` (and/or `lens`, `era`, etc.). Then `ytauto stage <slug> ideate` is NOT needed — the bibles are only re-applied during fresh ideate. To propagate a manual style edit to existing segment prompts, you'll need to manually edit the `Style: ...` line at the top of every segment's prompt, OR delete the segments and re-run ideate.
+- **Want different music across the whole project?** Edit `manifest.audio.music` and re-edit each segment prompt's `Music:` line, or simpler — delete `manifest.segments` + the `ideate` stage status, and re-run ideate.
+- **Want to skip a first-frame for a specific segment?** Set its `firstFrameDescription` to empty/missing **and** delete `firstFrameImagePath`. The frames stage will skip it. (Default behavior is to force one for every segment.)
+- **Disable the Topaz upscale for a single segment?** Set `segments[i].upscale: false` and re-run generate (delete the existing mp4 if you want to re-do it).
+- **Re-run ideate from scratch?** Delete `manifest.segments[]`, set `manifest.stages.ideate.status = "pending"`, and re-run.
 
-If you change a character/setting `description`, **delete its `imagePath`** so the artifacts stage regenerates the reference image.
+If you change a character / setting / prop `description`, **delete its `imagePath`** so the artifacts stage regenerates the reference image. The critique loop will re-score the new generation.
 
 ---
 
@@ -233,24 +268,26 @@ If you change a character/setting `description`, **delete its `imagePath`** so t
 
 Rough wall-clock per segment, on a typical Runway queue:
 
-| Step           | Time                |
-|----------------|---------------------|
-| ideate         | ~30-40s             |
-| 1 image gen    | ~50-70s             |
-| 1 video gen    | ~18-25 min          |
-| 4K upscale     | ~3-5 min per clip   |
-| Download       | <10s                |
-| Stitch         | <1s                 |
+| Step                       | Time                |
+|----------------------------|---------------------|
+| ideate pass 1 (outline)    | ~60-90s (high reasoning) |
+| ideate pass 2 (segments)   | ~90-120s (high reasoning) |
+| 1 image gen                | ~50-70s             |
+| 1 artifact critique pass   | ~25-35s             |
+| 1 video gen                | ~18-25 min          |
+| 4K upscale                 | ~3-5 min per clip   |
+| Download                   | <10s                |
+| Stitch                     | <1s                 |
 
-A 1-minute video (4 × 15s segments, parallel-2):
+A 1-minute video (4 × 15s segments, ~3 characters + 2 settings + 1 prop = 6 artifacts, parallel-2):
 
-- ideate: <1 min
-- artifacts: ~5 min (5 image gens)
-- frames: ~5 min (4 first-frames)
+- ideate (2 passes): ~3 min
+- artifacts: ~10 min (6 image gens + 6 critiques)
+- frames: ~5 min (4 first-frames, multi-ref)
 - generate: ~50 min (2 batches of 2)
 - stitch: <1s
 
-**~60-80 minutes total**, mostly Runway's queue.
+**~70-90 minutes total**, mostly Runway's queue.
 
 ---
 
