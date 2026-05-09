@@ -4,7 +4,7 @@
   "title": "60 Seconds to Shibuya Zero",
   "logline": "A futuristic Tokyo courier finds a time-bending package in her bag and has one minute to deliver it before Shibuya collapses into a permanent frozen moment.",
   "createdAt": "2026-05-09T21:42:48.508Z",
-  "updatedAt": "2026-05-09T21:53:28.019Z",
+  "updatedAt": "2026-05-09T22:22:24.399Z",
   "defaults": {
     "model": "seedance-2",
     "aspect": "9:16",
@@ -25,39 +25,47 @@
     },
     {
       "name": "black-enforcer",
-      "description": "34-year-old Korean man, cool medium tan skin, steel-grey eyes, shaved black hair with a narrow center strip, wearing a glossy black armored pursuit coat with red LED seam lines, high-collar respirator mask, layered carbon-fiber chest rig, black tactical trousers, and magnetic black boots; red hourglass tattoo visible on the left side of his neck, rigid predatory posture, always framed as fast and angular."
+      "description": "34-year-old Korean man, cool medium tan skin, steel-grey eyes, shaved black hair with a narrow center strip, wearing a glossy black armored pursuit coat with red LED seam lines, high-collar respirator mask, layered carbon-fiber chest rig, black tactical trousers, and magnetic black boots; red hourglass tattoo visible on the left side of his neck, rigid predatory posture, always framed as fast and angular.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\character-black-enforcer.png"
     }
   ],
   "settings": [
     {
       "name": "shibuya-rain-crossing",
-      "description": "futuristic Shibuya scramble crossing with layered pedestrian decks, holographic kanji billboards, wet black asphalt, vending drones, chrome traffic pylons, and glass storefronts. Night during heavy rain, lit by cyan-magenta neon and cold white street LEDs. Dominant palette: electric cyan, hot pink, glossy black."
+      "description": "futuristic Shibuya scramble crossing with layered pedestrian decks, holographic kanji billboards, wet black asphalt, vending drones, chrome traffic pylons, and glass storefronts. Night during heavy rain, lit by cyan-magenta neon and cold white street LEDs. Dominant palette: electric cyan, hot pink, glossy black.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\setting-shibuya-rain-crossing.png"
     },
     {
       "name": "neon-service-alley",
-      "description": "narrow Tokyo service alley between modular high-rises, exposed steam pipes, stacked delivery lockers, glowing noodle signs, puddled concrete, and tangled fiber-optic cables. Night lighting from red lanterns, blue maintenance strips, and flickering vending machines. Dominant palette: crimson, cobalt blue, oily silver."
+      "description": "narrow Tokyo service alley between modular high-rises, exposed steam pipes, stacked delivery lockers, glowing noodle signs, puddled concrete, and tangled fiber-optic cables. Night lighting from red lanterns, blue maintenance strips, and flickering vending machines. Dominant palette: crimson, cobalt blue, oily silver.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\setting-neon-service-alley.png"
     },
     {
       "name": "monorail-rooftop-platform",
-      "description": "abandoned elevated monorail platform above Shibuya rooftops, cracked safety glass, rusted yellow railings, dead ticket gates, wind-torn ad banners, and distant skyline towers. Pre-dawn darkness with storm flashes and green emergency beacons. Dominant palette: storm grey, acid green, deep violet."
+      "description": "abandoned elevated monorail platform above Shibuya rooftops, cracked safety glass, rusted yellow railings, dead ticket gates, wind-torn ad banners, and distant skyline towers. Pre-dawn darkness with storm flashes and green emergency beacons. Dominant palette: storm grey, acid green, deep violet.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\setting-monorail-rooftop-platform.png"
     },
     {
       "name": "clock-tower-shrine",
-      "description": "tiny techno-shrine built into a rooftop clock tower, brass gears behind glass walls, red paper prayer strips, black stone floor, server racks, and a central circular delivery altar. Night tipping into dawn, lit by warm amber clocklight and blue reactor glow. Dominant palette: amber gold, reactor blue, lacquer black."
+      "description": "tiny techno-shrine built into a rooftop clock tower, brass gears behind glass walls, red paper prayer strips, black stone floor, server racks, and a central circular delivery altar. Night tipping into dawn, lit by warm amber clocklight and blue reactor glow. Dominant palette: amber gold, reactor blue, lacquer black.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\setting-clock-tower-shrine.png"
     }
   ],
   "props": [
     {
       "name": "chrono-cube",
-      "description": "palm-sized black glass cube with beveled titanium edges, glowing cyan cracks, red digital countdown numerals floating inside, and tiny engraved text reading 'SHIBUYA ZERO'; usually held in Mika's gloved hand or hovering inches above a delivery surface."
+      "description": "palm-sized black glass cube with beveled titanium edges, glowing cyan cracks, red digital countdown numerals floating inside, and tiny engraved text reading 'SHIBUYA ZERO'; usually held in Mika's gloved hand or hovering inches above a delivery surface.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\prop-chrono-cube.png"
     },
     {
       "name": "mika-courier-bag",
-      "description": "compact matte charcoal crossbody delivery satchel with hard-shell corners, cyan reflective zipper track, magnetic latch, scratched white courier logo, and rain beads on the surface; usually slung tight across Mika's back or snapping open in her hands."
+      "description": "compact matte charcoal crossbody delivery satchel with hard-shell corners, cyan reflective zipper track, magnetic latch, scratched white courier logo, and rain beads on the surface; usually slung tight across Mika's back or snapping open in her hands.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\prop-mika-courier-bag.png"
     },
     {
       "name": "ren-wrist-console",
-      "description": "transparent curved wrist device with brushed silver frame, amber holographic clock rings, hairline cracks across the glass, and a pulsing blue receiver dot; usually strapped over Ren's coat sleeve or raised toward the chrono-cube."
+      "description": "transparent curved wrist device with brushed silver frame, amber holographic clock rings, hairline cracks across the glass, and a pulsing blue receiver dot; usually strapped over Ren's coat sleeve or raised toward the chrono-cube.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\artifacts\\prop-ren-wrist-console.png"
     }
   ],
   "segments": [
@@ -75,7 +83,8 @@
         "chrono-cube",
         "mika-courier-bag"
       ],
-      "firstFrameDescription": "Extreme close-up portrait frame: @chrono-cube is half-emerged from @mika-courier-bag above wet black asphalt, inches from impact, red countdown glow visible through black glass seams. @mika-sato's gloved hand and sneaker edge frame it. Heavy rain, cyan-magenta neon reflections, urgent kinetic stillness."
+      "firstFrameDescription": "Extreme close-up portrait frame: @chrono-cube is half-emerged from @mika-courier-bag above wet black asphalt, inches from impact, red countdown glow visible through black glass seams. @mika-sato's gloved hand and sneaker edge frame it. Heavy rain, cyan-magenta neon reflections, urgent kinetic stillness.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\01-shibuya-zero-freeze.png"
     },
     {
       "name": "02-service-alley-pursuit",
@@ -91,7 +100,8 @@
         "neon-service-alley",
         "chrono-cube"
       ],
-      "firstFrameDescription": "Wide vertical alley composition: @mika-sato is mid-sprint in @neon-service-alley, clutching @chrono-cube low near her ribs. Steam pipes, delivery lockers, puddled concrete, red lanterns, and cobalt maintenance strips crowd the frame. Wet reflections and neon bloom create urgent cyberpunk chase energy."
+      "firstFrameDescription": "Wide vertical alley composition: @mika-sato is mid-sprint in @neon-service-alley, clutching @chrono-cube low near her ribs. Steam pipes, delivery lockers, puddled concrete, red lanterns, and cobalt maintenance strips crowd the frame. Wet reflections and neon bloom create urgent cyberpunk chase energy.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\02-service-alley-pursuit.png"
     },
     {
       "name": "03-monorail-rooftop-choice",
@@ -107,7 +117,8 @@
         "monorail-rooftop-platform",
         "chrono-cube"
       ],
-      "firstFrameDescription": "Wide vertical frame on @monorail-rooftop-platform: @mika-sato stands near dead ticket gates with @chrono-cube clutched to her chest, rain cutting across cracked safety glass. Rusted yellow railings, wind-torn ad banners, distant towers, acid-green beacons, and deep violet storm light frame the risky height."
+      "firstFrameDescription": "Wide vertical frame on @monorail-rooftop-platform: @mika-sato stands near dead ticket gates with @chrono-cube clutched to her chest, rain cutting across cracked safety glass. Rusted yellow railings, wind-torn ad banners, distant towers, acid-green beacons, and deep violet storm light frame the risky height.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\03-monorail-rooftop-choice.png"
     },
     {
       "name": "04-clock-tower-handoff",
@@ -124,7 +135,8 @@
         "chrono-cube",
         "ren-wrist-console"
       ],
-      "firstFrameDescription": "Wide vertical interior: @mika-sato is low and off-balance at the threshold of @clock-tower-shrine, gripping @chrono-cube toward the central circular altar. Brass gears glow behind glass, server racks pulse blue, red prayer strips hang overhead, and amber clocklight cuts through rain mist."
+      "firstFrameDescription": "Wide vertical interior: @mika-sato is low and off-balance at the threshold of @clock-tower-shrine, gripping @chrono-cube toward the central circular altar. Brass gears glow behind glass, server racks pulse blue, red prayer strips hang overhead, and amber clocklight cuts through rain mist.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-1-minute-viral-short-a-delivery-courier-in-a-futuristic-to\\frames\\04-clock-tower-handoff.png"
     }
   ],
   "stages": {
@@ -133,13 +145,15 @@
       "completedAt": "2026-05-09T21:45:58.884Z"
     },
     "artifacts": {
-      "status": "running"
+      "status": "done",
+      "completedAt": "2026-05-09T22:12:52.545Z"
     },
     "frames": {
-      "status": "pending"
+      "status": "done",
+      "completedAt": "2026-05-09T22:22:24.398Z"
     },
     "generate": {
-      "status": "pending"
+      "status": "running"
     },
     "stitch": {
       "status": "pending"
