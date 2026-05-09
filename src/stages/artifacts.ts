@@ -54,7 +54,22 @@ async function generateAssetGroup(
 
 function buildPrompt(kind: "character" | "setting", asset: Asset): string {
   if (kind === "character") {
-    return `Reference character portrait, full body or three-quarter shot, neutral plain background, even lighting, photorealistic, consistent identity. ${asset.description}. The image must be a clean visual reference of this character — no captions, no text, no logos.`;
+    return [
+      "Photorealistic full-body character reference sheet.",
+      asset.description.trim().replace(/\.$/, "") + ".",
+      "Neutral standing pose, front-facing, arms relaxed at sides.",
+      "Plain light grey background. Flat even studio lighting, no harsh shadows.",
+      "85mm portrait lens feel, sharp focus throughout.",
+      "Visible skin pores, fabric texture, fine hair detail.",
+      "No motion blur. No text. No watermark. No logos.",
+      "Portrait aspect 2:3."
+    ].join(" ");
   }
-  return `Reference environment plate of "${asset.name}", wide-establishing or representative angle, even lighting, photorealistic, no people present unless described. ${asset.description}. The image must be a clean visual reference of this location — no captions, no text, no logos.`;
+  return [
+    `Photorealistic interior photograph of ${asset.name.replace(/-/g, " ")}.`,
+    asset.description.trim().replace(/\.$/, "") + ".",
+    "No people. No figures. No text. No watermark.",
+    "Medium-wide shot, eye-level, 28mm equivalent.",
+    "Sharp throughout. Clean cinematic feel. 16:9 aspect."
+  ].join(" ");
 }

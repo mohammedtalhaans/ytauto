@@ -266,3 +266,7 @@ ffmpeg's `-c copy` requires identical codec/resolution across all clips. If you 
 ## Architecture
 
 For internals (why parallelism is non-trivial, how queue detection works, what every stage actually does), see [HOW-IT-WORKS.md](HOW-IT-WORKS.md).
+
+## Getting better videos
+
+How to write the idea, edit segment prompts, and tune reference image generation for max consistency and quality — see [PROMPTING.md](PROMPTING.md). Synthesizes Runway/Seedance 2.0 + gpt-image-2 best practices, with templates ready to paste.

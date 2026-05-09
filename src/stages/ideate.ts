@@ -45,17 +45,31 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   manifest.logline = parsed.logline;
   manifest.characters = parsed.characters.map((c) => ({ name: kebab(c.name), description: c.description }));
   manifest.settings = parsed.settings.map((s) => ({ name: kebab(s.name), description: s.description }));
-  manifest.segments = parsed.segments.map((s, i) => ({
-    name: s.name ? kebab(s.name) : `seg-${String(i + 1).padStart(2, "0")}`,
-    prompt: s.prompt,
-    duration: clampDuration(s.duration ?? manifest.defaults.duration),
-    aspect: manifest.defaults.aspect as Aspect,
-    model: manifest.defaults.model as Model,
-    resolution: manifest.defaults.resolution as Resolution,
-    upscale: manifest.defaults.upscale,
-    refs: (s.refs ?? []).map(kebab),
-    firstFrameDescription: s.firstFrameDescription ?? undefined
-  }));
+
+  // Build a verbatim descriptor lookup. We inject the character description
+  // into every segment prompt that references that character, ensuring the
+  // same identity string lands in every Seedance call.
+  const characterDescByName = new Map(manifest.characters.map((c) => [c.name, c.description]));
+
+  manifest.segments = parsed.segments.map((s, i) => {
+    const refs = (s.refs ?? []).map(kebab);
+    const charRefs = refs.filter((name) => characterDescByName.has(name));
+    const characterBlock = charRefs.length > 0
+      ? charRefs.map((name) => `[${name}]: ${characterDescByName.get(name)}`).join("\n") + "\n\n"
+      : "";
+    const promptWithIdentity = characterBlock + s.prompt.trim();
+    return {
+      name: s.name ? kebab(s.name) : `seg-${String(i + 1).padStart(2, "0")}`,
+      prompt: promptWithIdentity,
+      duration: clampDuration(s.duration ?? manifest.defaults.duration),
+      aspect: manifest.defaults.aspect as Aspect,
+      model: manifest.defaults.model as Model,
+      resolution: manifest.defaults.resolution as Resolution,
+      upscale: manifest.defaults.upscale,
+      refs,
+      firstFrameDescription: s.firstFrameDescription ?? undefined
+    };
+  });
   setStageStatus(manifest, "ideate", "done");
   saveManifest(manifest, cwd);
   writeFileSync(join(projectDir(manifest.slug, cwd), "script.md"), buildScriptMarkdown(manifest));
