@@ -16,6 +16,7 @@ interface OutlineRaw {
   title: string;
   logline: string;
   hookMoment: string;
+  spectacleHints?: string[];
   storyBeats: string[];
   characters: Array<{ name: string; description: string }>;
   settings: Array<{ name: string; description: string }>;
@@ -56,6 +57,7 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   manifest.title = outline.title;
   manifest.logline = outline.logline;
   manifest.hookMoment = outline.hookMoment;
+  manifest.spectacleHints = outline.spectacleHints ?? [];
   manifest.storyBeats = outline.storyBeats;
   manifest.characters = outline.characters.map((c) => ({ name: kebab(c.name), description: c.description }));
   manifest.settings = outline.settings.map((s) => ({ name: kebab(s.name), description: s.description }));
@@ -64,9 +66,12 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   manifest.audio = outline.audio;
   saveManifest(manifest, cwd);
   options.log(
-    `[ideate] outline: ${manifest.characters.length} char(s), ${manifest.settings.length} setting(s), ${manifest.props.length} prop(s), ${manifest.storyBeats.length} beat(s)`
+    `[ideate] outline: ${manifest.characters.length} char(s), ${manifest.settings.length} setting(s), ${manifest.props.length} prop(s), ${manifest.storyBeats.length} beat(s), ${manifest.spectacleHints?.length ?? 0} spectacle hint(s)`
   );
   options.log(`[ideate] hook: ${manifest.hookMoment}`);
+  for (const hint of manifest.spectacleHints ?? []) {
+    options.log(`[ideate] spectacle: ${hint}`);
+  }
 
   // ---- PASS 2: Segments (with up to 2 retries on length-violation) ----
   const segments = await passSegmentsWithRetries(manifest, outline, options, cwd);
@@ -313,6 +318,11 @@ function buildScriptMarkdown(manifest: Manifest): string {
   if (manifest.storyBeats && manifest.storyBeats.length > 0) {
     lines.push("## Story beats", "");
     manifest.storyBeats.forEach((beat, i) => lines.push(`${i + 1}. ${beat}`));
+    lines.push("");
+  }
+  if (manifest.spectacleHints && manifest.spectacleHints.length > 0) {
+    lines.push("## Planned spectacle / VFX moments", "");
+    manifest.spectacleHints.forEach((hint) => lines.push(`- ${hint}`));
     lines.push("");
   }
   lines.push("## Characters", "");

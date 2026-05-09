@@ -22,6 +22,32 @@ Vertical short-form video lives or dies in the first second. Plan **fast** by de
 - Story progression in EVERY segment — something physically changes (a hand reaches in, a door opens, an object falls, weather shifts, a character enters/exits frame). No purely contemplative beats.
 - Short timestamp blocks. A 15s segment usually wants 3–5 blocks of 3–5s each, not 2 blocks of 7-8s.
 
+## Spectacle direction — lean into VFX, action, and the impossible
+
+Plain mundane scenes rarely go viral. **Default to stories that allow at least one piece of unusual visual spectacle per segment.** Even an indie drama can have a moment of magical realism, a kinetic chase beat, an environmental anomaly, a practical-effect surprise. Plan for it.
+
+Plan WHERE the spectacle moments will land. Output a `spectacleHints` array (one short sentence per planned spectacle moment, anchored to a segment number) so pass 2 knows what to render in each segment's timestamp blocks. 2–6 hints across the whole video is typical; not every segment needs one but most should have something.
+
+### Categories of spectacle Seedance 2.0 renders reliably
+
+Pick from these — they're the patterns the model handles well. Mix and match across segments.
+
+- **Time/physics anomalies**: time-freeze with one character moving through a still crowd, slow-motion bullets/raindrops/dust, gravity inversion (objects falling upward), suspended motion (a glass shattering frozen mid-air), reality glitches/tears, displaced reflections that don't match what's in front of the mirror.
+- **Energy & superpowers**: arcs of cyan/magenta lightning between fingertips, telekinetic lifts of small-to-medium objects (chairs, debris, crowds of pigeons), kinetic auras around a character, glowing tracer trails left by a moving hand, force-field ripples that bend the air, beams from eyes/palms.
+- **Combat & action**: choreographed fight beats with weapon trails (sword arcs leaving light streaks), impact ripples that distort the air outward, debris kick-up, slow-mo punch landing with concentric shockwave, parkour through a collapsing structure, sparks raining from clashing blades, blood-spray-replaced-with-petals/light/dust.
+- **Particle & elemental**: sparks, embers, ash, snowfall, leaves, debris swirling around a character; fire that bends with wind; water that walls up and freezes; sand vortex around a still figure; bubbles rising in reverse.
+- **Practical pyrotechnics**: explosions (small to medium scale — single car, single window, one wall), fireballs blooming behind a character walking forward, electrical surges arcing through machinery, smoke columns lit from within.
+- **Transformation/morph**: a character dissolving into particles and reforming elsewhere, a flower blooming in time-lapse, a face cracking into geometric shards, a body covered in advancing frost or ink veins.
+- **Holographic/sci-fi**: floating UIs, kanji holograms shattering and re-forming, light projections that wrap a character's body, neon trails that follow movement, energy weapons (sabers, gauntlets, glowing arrows).
+- **Surreal compositing**: impossible perspectives (the room rotates around a static character), sudden-scale shifts (the character grows tiny among normal objects), a sky breaking like glass, a building unfolding like origami.
+
+### What to AVOID
+
+- Generic "powerful effects" without a specific physical referent — Seedance can't render "magic happens"; it CAN render "a single arc of pale-blue plasma traces from her index finger to the lock and the bolt clicks open in a puff of frost."
+- Effects requiring perfect text or symbols — Seedance struggles with rendered text, runes, tattoos with specific letters. If a magical effect involves writing, keep it abstract glyphs not Latin/CJK characters.
+- Crowds-in-VFX-action (50+ people fighting) — Seedance loses anatomy at scale. Keep VFX combat to 1-on-1 or small groups.
+- Photorealistic gore — model often refuses or distorts faces. Use stylized substitutes (light, dust, petals).
+
 ## The opening hook — MANDATORY
 
 Vertical YouTube/TikTok/Shorts attention-curve research is unambiguous: if the first **3–5 seconds** doesn't stop the scroll, the watch is gone. So segment 1's opening 3–5s MUST be **eye-catching, unique, and a little crazy** — never an establishing shot.
@@ -113,7 +139,13 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
 {
   "title": "...",
   "logline": "one-sentence summary of the whole video",
-  "hookMoment": "one specific 3–5s opening shot that stops the scroll. Concrete physical event. Connects to the story.",
+  "hookMoment": "one specific 3–5s opening shot that stops the scroll. Concrete physical event. Connects to the story. Lean toward VFX/spectacle when the story allows.",
+  "spectacleHints": [
+    "Segment 1: cyan time-freeze ripple expands from the cube — every raindrop, scooter, pedestrian halts mid-motion except Mika.",
+    "Segment 2: black-enforcer summons a black-glass shockwave from his glove that buckles a row of vending machines as Mika dives behind a dumpster.",
+    "Segment 3: countdown digit hits 10s — the air around Mika visibly distorts in heat-shimmer rings; she sprints in slow-motion across the rooftop while tiles crack in real time.",
+    "Segment 4: the cube detonates outward in a controlled bloom of cyan particles that reform Shibuya scene-by-scene as time resumes."
+  ],
   "storyBeats": [
     "Segment 1 beat — must incorporate the hookMoment.",
     "Segment 2 beat — ...",

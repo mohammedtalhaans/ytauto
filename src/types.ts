@@ -67,6 +67,11 @@ export interface Manifest {
   // executed in segment[0]'s opening timestamp block. Captured during ideate
   // pass 1; consumed by ideate pass 2 to write segment[0]'s opening shot.
   hookMoment?: string;
+  // Planned VFX/spectacle moments across segments — one short sentence per
+  // moment, prefixed with the segment number. Pass 2 consumes these and
+  // renders them inside the relevant segment's timestamp blocks. Empty array
+  // is allowed for genuinely subdued projects but most should have 2-6.
+  spectacleHints?: string[];
   characters: Asset[];
   settings: Asset[];
   props: Asset[];                          // key objects (locket, letter, bouquet, etc.)
