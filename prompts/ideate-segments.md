@@ -36,14 +36,22 @@ Each entry in `outline.spectacleHints` names a specific VFX/action moment for a 
 
 Spectacle integration rules:
 
-- **Specify the physical mechanics of the effect.** Not "she uses her power" — describe what physically happens: "a single arc of pale-blue plasma traces from her index finger to the lock; the bolt clicks open in a puff of frost; her fingertip glows for half a second after."
-- **Use Seedance-renderable VFX vocabulary**: shockwave ripple, heat shimmer, chromatic aberration, lens flare bloom, particle trail, plasma arc, light beam, gravity-inverted debris, slow-motion freeze-frame, dust kick-up, ember swirl, telekinetic lift (small to medium objects), force-field distortion, holographic shatter, neon trail, smoke column, controlled fireball, light dissolve, frost advance, glitch tear.
-- **Anchor the effect to a body part or object in frame**, with a specific origin and trajectory. ("From his open palm" → "outward in a 2-metre cone" → "into the dumpster, which crumples"). Don't write disembodied effects.
-- **Match the camera move to the effect.** Snap zoom on the moment of impact. Slow dolly during a time-freeze. Whip pan to follow a thrown object. Locked-off macro on a particle bloom.
-- **One VFX moment per block, max.** Spectacle stacking ("she shoots lightning AND time freezes AND a portal opens AND the building explodes") collapses. Pick ONE per beat, render it with full physical detail, move on.
-- **NOT every block needs spectacle.** A pure body-mechanics block (a sprint, a vault, a turn) is fine and reads as kinetic on its own. Use spectacle for the high points the outline planned.
+- **Specify the physical mechanics of the effect — this is what unlocks the model's full capability.** Seedance 2.0 will render almost anything if you describe it concretely. Vague "she uses her power" fails. The same effect succeeds when broken into physical detail: origin point, direction, propagation, scale, color, what it touches, what changes. Write *more* physical detail for *more ambitious* effects, not less.
+- **Be ambitious.** If the story calls for a city block freezing in time, an entire vending-machine row buckling in a magnetic shockwave, a sky tearing open into another reality, a character splitting into three afterimages mid-sprint, a tower falling in slow-motion ribbons of glass — write it. Just describe each physical layer of what the model needs to render.
+- **Anchor the effect** to a body part or object with a specific origin and trajectory. "From his open palm" → "outward in a 2-metre cone of black-glass shards" → "the row of seven enforcers crumples in unison, three buckling inward and four shattering into particles." Disembodied "an explosion happens" fails; this kind of mechanical chain succeeds.
+- **Layer the description**: what triggers the effect (a snap, a step, a held breath), what propagates (the medium — light, plasma, distortion ripple, particles, shockwave), what's affected (specific objects/characters in frame and HOW they react), what's left behind (residue, glow, smoke, frost, silence).
+- **Match the camera move to the effect.** Snap zoom on the moment of impact. Slow dolly during a time-freeze. Whip pan to follow a thrown object. Locked-off macro on a particle bloom. Crash zoom into the eye of a character whose pupil contains the entire collapsing skyline.
+- **One VFX moment per block, max** — but the moment can be elaborate. A single block can be: "she snaps her fingers; every neon sign in @shibuya-rain-crossing flickers off in sequence from screen-left to screen-right over 1 second; in the last 0.5s a single cyan plasma arc traces from her fingertip up through the freshly-dark sky and ignites a vertical column of light 200 metres tall" — that's ONE spectacle moment, fully rendered.
+- **NOT every block needs spectacle.** A pure body-mechanics block (a sprint, a vault, a turn) is fine and reads as kinetic on its own. Use spectacle for the planned hints + any additional moments the story justifies.
 
-If the outline's `spectacleHints` is missing or empty for a given segment, you may still add tasteful environmental spectacle (a dramatic rain shaft, a falling neon sign, a flock of pigeons exploding from cover) to keep visual energy high. But prioritize the planned hints.
+If the outline's `spectacleHints` is missing or empty for a given segment, you have license to add tasteful environmental spectacle yourself (collapsing rain shaft, falling neon sign, pigeon explosion, neon-trail aftermath, etc.) to keep visual energy high. But prioritize the planned hints — they're what the rest of the script was designed around.
+
+### Two narrow guardrails (otherwise: be bold)
+
+- Don't ask for **specific Latin/CJK text** rendered inside an effect (readable letters in spell circles, character names on a HUD). Use abstract glyphs.
+- No **dialogue lines** in segment prompts (out of scope for this pipeline).
+
+That's it. Outside those two, ambitious + specific = renderable.
 
 ## Seedance 2.0 `@<name>` reference syntax
 

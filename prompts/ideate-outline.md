@@ -28,25 +28,34 @@ Plain mundane scenes rarely go viral. **Default to stories that allow at least o
 
 Plan WHERE the spectacle moments will land. Output a `spectacleHints` array (one short sentence per planned spectacle moment, anchored to a segment number) so pass 2 knows what to render in each segment's timestamp blocks. 2–6 hints across the whole video is typical; not every segment needs one but most should have something.
 
-### Categories of spectacle Seedance 2.0 renders reliably
+### How spectacle works in Seedance 2.0
 
-Pick from these — they're the patterns the model handles well. Mix and match across segments.
+Seedance 2.0 is a flagship video model. With sufficient physical detail it renders nearly anything you can describe specifically — including ambitious, large-scale, multi-element VFX. **Your job is specificity, not restraint.** The model fails on vague magic ("she uses her power"); it succeeds on the same effect when you describe its physical mechanics in detail ("a 2-metre cone of pale-blue plasma erupts from her open palm, the ground beneath her feet cratering inward 8 inches, the air rippling with heat-shimmer for 3 metres in front of her").
 
-- **Time/physics anomalies**: time-freeze with one character moving through a still crowd, slow-motion bullets/raindrops/dust, gravity inversion (objects falling upward), suspended motion (a glass shattering frozen mid-air), reality glitches/tears, displaced reflections that don't match what's in front of the mirror.
-- **Energy & superpowers**: arcs of cyan/magenta lightning between fingertips, telekinetic lifts of small-to-medium objects (chairs, debris, crowds of pigeons), kinetic auras around a character, glowing tracer trails left by a moving hand, force-field ripples that bend the air, beams from eyes/palms.
-- **Combat & action**: choreographed fight beats with weapon trails (sword arcs leaving light streaks), impact ripples that distort the air outward, debris kick-up, slow-mo punch landing with concentric shockwave, parkour through a collapsing structure, sparks raining from clashing blades, blood-spray-replaced-with-petals/light/dust.
-- **Particle & elemental**: sparks, embers, ash, snowfall, leaves, debris swirling around a character; fire that bends with wind; water that walls up and freezes; sand vortex around a still figure; bubbles rising in reverse.
-- **Practical pyrotechnics**: explosions (small to medium scale — single car, single window, one wall), fireballs blooming behind a character walking forward, electrical surges arcing through machinery, smoke columns lit from within.
-- **Transformation/morph**: a character dissolving into particles and reforming elsewhere, a flower blooming in time-lapse, a face cracking into geometric shards, a body covered in advancing frost or ink veins.
-- **Holographic/sci-fi**: floating UIs, kanji holograms shattering and re-forming, light projections that wrap a character's body, neon trails that follow movement, energy weapons (sabers, gauntlets, glowing arrows).
-- **Surreal compositing**: impossible perspectives (the room rotates around a static character), sudden-scale shifts (the character grows tiny among normal objects), a sky breaking like glass, a building unfolding like origami.
+Be ambitious. Plan effects that match the story's emotional ceiling, then describe them with enough physical specificity that the model has something concrete to render every frame.
 
-### What to AVOID
+### Categories — non-exhaustive, mix freely
 
-- Generic "powerful effects" without a specific physical referent — Seedance can't render "magic happens"; it CAN render "a single arc of pale-blue plasma traces from her index finger to the lock and the bolt clicks open in a puff of frost."
-- Effects requiring perfect text or symbols — Seedance struggles with rendered text, runes, tattoos with specific letters. If a magical effect involves writing, keep it abstract glyphs not Latin/CJK characters.
-- Crowds-in-VFX-action (50+ people fighting) — Seedance loses anatomy at scale. Keep VFX combat to 1-on-1 or small groups.
-- Photorealistic gore — model often refuses or distorts faces. Use stylized substitutes (light, dust, petals).
+Use these as inspiration, not as a wall. If your story calls for something not listed, describe it specifically and the model will render it.
+
+- **Time/physics anomalies**: time-freeze with one character moving through a frozen crowd, slow-motion bullets/raindrops/dust, gravity inversion (an entire street's worth of cars lifting in unison and floating 3 metres up), suspended motion (a glass shattering frozen mid-air with each shard tracked), reality glitches/tears, displaced reflections, time loops (the same 1s of action playing in reverse and forward).
+- **Energy & superpowers**: arcs of cyan/magenta lightning between fingertips, telekinetic lifts of objects from a coffee cup to a city bus, kinetic auras around a character that bend nearby light, glowing tracer trails, force-field ripples that bend the air, eye-beams that vaporize a pillar, palm-blasts that punch through concrete, energy shields that absorb impacts and ripple outward.
+- **Combat & action**: choreographed fight beats with weapon trails, sword arcs leaving light streaks, impact shockwaves that distort the air outward in concentric rings, slow-mo punch landings with cracked-asphalt rebound, parkour through a collapsing structure, sparks raining from clashing blades, blood-spray-replaced-with-petals/light/ink (or actual blood if the project tone calls for it), 2-on-1 / 3-on-1 choreography. Crowd combat works if you specify behavior — "the row of seven enforcers in @neon-service-alley raise their batons in unison and snap a single magnetic shockwave forward; the front three buckle inward, the back four shatter into black-glass particles."
+- **Practical pyrotechnics**: explosions at any scale you can describe — a single window, a car, a building's lower floors collapsing in a wave, a city block lighting up sequentially in a chain. The bigger the effect, the more important the specific physical anchor (where it starts, how it propagates, where the camera is).
+- **Particle & elemental**: sparks, embers, ash, snowfall, leaves, sand, debris swirling around a character; fire that bends with wind into a wall; water that walls up and freezes; a sand vortex around a still figure; bubbles rising in reverse; a thousand pigeons exploding upward in slow-mo at the same moment.
+- **Transformation/morph**: a character dissolving into particles and reforming elsewhere, a flower blooming in time-lapse, a face cracking into geometric shards, a body covered in advancing frost or ink veins, a creature unfolding from a small object.
+- **Holographic/sci-fi**: floating UIs, holographic shatters that re-form, light projections that wrap a character's body, neon trails that follow movement, energy weapons (sabers, gauntlets, glowing arrows), drones swarming and re-forming into shapes.
+- **City-scale & cosmic**: a single building unfolding like origami, a sky breaking like glass with shards falling toward camera, a tower-tall energy beam splitting the clouds, an entire skyline frozen mid-collapse, a portal tearing reality open with the world beyond visible through the gap, gravitational lensing distortion around a hovering object.
+- **Surreal compositing**: impossible perspectives (the room rotates around a static character), sudden scale shifts, multi-character impossible-anatomy moments (a character with three pairs of arms — describe each pair), perspective tricks (the character is tiny in one shot, normal-sized in the next).
+
+### Two narrow guardrails
+
+The model is highly capable but has two consistent weak spots. Don't ask for these specifically:
+
+- **Rendered Latin/CJK text inside effects** (specific letters in glowing runes, readable signs in spell circles, character names floating on a HUD). Text rendering remains imperfect. Use abstract glyphs/symbols, not specific characters. Around-the-effect text is fine — the issue is text *as* the effect.
+- **Long sustained dialogue with mouth-sync** is outside the scope of this pipeline anyway (we don't generate dialogue here). Don't write spoken lines into segment prompts.
+
+These are the only two narrow restraints. **Otherwise: be bold.** If a moment in the story wants a city block to ripple with cyan light as time freezes and 200 people lift 2 metres off the ground in unison while the protagonist sprints between them, plan that moment. Pass 2 will render it with full physical detail.
 
 ## The opening hook — MANDATORY
 
