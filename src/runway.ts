@@ -329,7 +329,11 @@ async function uploadReferences(page: Page, refs: ResolvedRef[]): Promise<void> 
   }
   // Wait for upload to complete: each ref shows up as IMG_<n> in the references panel.
   // Runway also shows a transient "Started uploading N files" toast that disappears when done.
-  const deadline = Date.now() + 120000;
+  // Timeout scales with ref count — Runway's S3 upload pipeline takes ~15-25s
+  // per ref; with last-frame conditioning some segments now upload 10 refs.
+  // Allow 30s per ref + 60s base buffer.
+  const timeoutMs = Math.max(120000, refs.length * 30000 + 60000);
+  const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const body = await readBody(page);
     const labelCount = countImgLabels(body);
@@ -341,7 +345,15 @@ async function uploadReferences(page: Page, refs: ResolvedRef[]): Promise<void> 
     }
     await page.waitForTimeout(1500);
   }
-  throw new Error(`Reference upload did not complete within 120s (saw ${countImgLabels(await readBody(page))}/${refs.length} thumbnails)`);
+  // If we got within 1 of the expected count, accept and proceed — Runway's
+  // UI sometimes lags rendering the final thumbnail even after the upload
+  // committed server-side. Below that threshold, fail loudly.
+  const finalCount = countImgLabels(await readBody(page));
+  if (finalCount >= refs.length - 1) {
+    console.warn(`[runway] reference upload reported ${finalCount}/${refs.length} thumbnails after ${Math.round(timeoutMs / 1000)}s; proceeding anyway (within tolerance)`);
+    return;
+  }
+  throw new Error(`Reference upload did not complete within ${Math.round(timeoutMs / 1000)}s (saw ${finalCount}/${refs.length} thumbnails)`);
 }
 
 function countImgLabels(body: string): number {
