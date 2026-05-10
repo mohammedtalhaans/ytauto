@@ -41,6 +41,7 @@ interface SegmentsRaw {
     duration: number;
     refs: string[];
     firstFrameDescription: string;
+    lastFrameDescription: string;
     beatFunction?: BeatFunction;
     locationCard?: string | null;
   }>;
@@ -137,11 +138,25 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
       resolution: manifest.defaults.resolution as Resolution,
       upscale: manifest.defaults.upscale,
       refs,
-      firstFrameDescription: s.firstFrameDescription.trim(),
+      firstFrameDescription: s.firstFrameDescription?.trim(),
+      lastFrameDescription: s.lastFrameDescription?.trim(),
       beatFunction,
       locationCard: effectiveCard
     };
   });
+
+  // Continuity sync — for non-final segments, ensure lastFrameDescription
+  // equals segment[i+1].firstFrameDescription so the frames stage can reuse
+  // the same image file across the cut. Pass 2 is instructed to make these
+  // identical; if the model drifts, we sync to the NEXT segment's
+  // firstFrameDescription (not the current segment's lastFrameDescription)
+  // because firstFrame is the canonical anchor for that segment.
+  for (let i = 0; i < manifest.segments.length - 1; i++) {
+    const next = manifest.segments[i + 1];
+    if (next.firstFrameDescription) {
+      manifest.segments[i].lastFrameDescription = next.firstFrameDescription;
+    }
+  }
 
   setStageStatus(manifest, "ideate", "done");
   saveManifest(manifest, cwd);
@@ -239,11 +254,25 @@ async function passSegmentsWithRetries(
     // Validate every segment's *final composed* length. If any exceeds, retry
     // with a tightened character budget.
     const violations: Array<{ name: string; finalLen: number; baseLen: number }> = [];
-    for (const seg of parsed.segments) {
+    for (let segIdx = 0; segIdx < parsed.segments.length; segIdx++) {
+      const seg = parsed.segments[segIdx];
       if (!seg.firstFrameDescription) {
         violations.push({ name: seg.name, finalLen: 0, baseLen: 0 });
         extraInstructions += `\n- Segment "${seg.name}" was missing firstFrameDescription. EVERY segment must have one (no nulls).`;
         continue;
+      }
+      if (!seg.lastFrameDescription) {
+        violations.push({ name: seg.name, finalLen: 0, baseLen: 0 });
+        extraInstructions += `\n- Segment "${seg.name}" was missing lastFrameDescription. EVERY segment must have one (no nulls). For non-final segments it should EQUAL segments[i+1].firstFrameDescription.`;
+        continue;
+      }
+      // For non-final segments, lastFrameDescription must match next
+      // segment's firstFrameDescription. The pipeline will auto-sync at
+      // ingest, but warn the model so it converges on identity.
+      const next = parsed.segments[segIdx + 1];
+      if (next && next.firstFrameDescription &&
+          seg.lastFrameDescription.trim() !== next.firstFrameDescription.trim()) {
+        extraInstructions += `\n- Segment "${seg.name}" lastFrameDescription does NOT equal segments[${segIdx + 1}].firstFrameDescription word-for-word. They must be byte-identical so the pipeline can reuse the image file across the cut.`;
       }
       const refs = (seg.refs ?? []).map(kebab);
       // Validate refs reference real names.
@@ -264,7 +293,13 @@ async function passSegmentsWithRetries(
       }
     }
 
-    if (violations.length === 0 && !extraInstructions.includes("missing firstFrameDescription") && !extraInstructions.includes("refs unknown")) {
+    if (
+      violations.length === 0 &&
+      !extraInstructions.includes("missing firstFrameDescription") &&
+      !extraInstructions.includes("missing lastFrameDescription") &&
+      !extraInstructions.includes("refs unknown") &&
+      !extraInstructions.includes("does NOT equal")
+    ) {
       return parsed.segments;
     }
 
@@ -331,17 +366,14 @@ function composeSegmentPrompt(args: ComposeArgs): string {
       charBlocks.push(`[${ref}]: ${desc}`);
     }
   }
-  // Style line: lens + grade only. Motion philosophy (handheld vs locked-off)
-  // is already implied by every segment's per-block camera move language, so
-  // prepending it again is redundant cost.
+  // Preamble is now MINIMAL by design — only style (lens + grade) and the
+  // verbatim character descriptors. The audio bible no longer prepends; pass
+  // 2 writes a tight 1-line "Music: ... Sound: ..." cue per segment using
+  // genre/tempo/key from the bible (not the full verbose music+ambient+mix
+  // restatement). This frees ~400 chars per segment for richer scene blocks
+  // and a denser SFX list.
   const styleLine = `Style: ${args.style.lens}; ${args.style.grade}.`;
-  // Audio bible re-prepended (was removed earlier when it duplicated pass 2's
-  // verbose footer; pass 2's footer is now slim — just SFX/music timestamps —
-  // so prepending the bible here gives the cross-segment coherent music + SFX
-  // motif at much lower per-segment cost). Compact format — drop sfxMotif
-  // (it's expressed in per-segment SFX events anyway) and use minimal labels.
-  const audioLine = `Audio: ${args.audio.music}; ambient — ${args.audio.ambient}; ${args.audio.mixNote}.`;
-  const parts: string[] = [styleLine, audioLine];
+  const parts: string[] = [styleLine];
   if (charBlocks.length > 0) {
     parts.push(charBlocks.join("\n"));
   }
@@ -426,6 +458,9 @@ function buildScriptMarkdown(manifest: Manifest): string {
     lines.push("```");
     if (seg.firstFrameDescription) {
       lines.push("", `_first frame:_ ${seg.firstFrameDescription}`);
+    }
+    if (seg.lastFrameDescription) {
+      lines.push("", `_last frame:_ ${seg.lastFrameDescription}`);
     }
     lines.push("");
   }

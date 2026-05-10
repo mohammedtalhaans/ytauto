@@ -26,9 +26,10 @@ Emit one segment per `storyBeats` entry, in order. Each segment must:
 
 1. Reference characters, settings, and props from the outline by their `name`, using the `@<name>` Seedance 2.0 reference syntax inside the prompt body.
 2. Use the field-card prompt format below.
-3. Choose **3–5** timestamp shot blocks that **must total exactly the segment's duration**. Don't pad. Use **short** blocks (3–5s each) to keep pacing fast — vertical short-form lives or dies on action density.
-4. **Always** include a `firstFrameDescription` (no `null` allowed in this pipeline). Every segment is anchored to a specific first-frame still.
-5. **Don't** restate the audio bible verbatim — the pipeline prepends `music`/`ambient`/`sfxMotif`/`mix` once at the top. Your `Sound:` / `Music:` footer lines only carry segment-specific timestamps (e.g. `SFX: train door chime @ 6s; locket click @ 14s. Music timing: enters at 0s, resolves at 14s.`). Saves ~300 chars per segment that goes into denser scene blocks.
+3. Choose **3–5** timestamp shot blocks that **must total exactly the segment's duration**. Don't pad. Use **short** blocks (3–5s each) to keep pacing fast.
+4. Include **BOTH** a `firstFrameDescription` AND a `lastFrameDescription` for every segment. These get rendered as PNGs by gpt-image-2 and uploaded to Seedance as `@first-frame` and `@last-frame` — Seedance interpolates between them across the segment's duration, giving model-level continuity instead of just prompt-level continuity.
+5. **For non-final segments, `lastFrameDescription` MUST EQUAL `firstFrameDescription` of the next segment word-for-word.** The pipeline auto-syncs these at ingest, but you should write them identical from the start so the cut between segments is invisible (same image file used for both endpoints across the cut). The final segment's `lastFrameDescription` is unique — it's the closing image of the whole video.
+6. The pipeline pre-pends only a tight style line + verbatim character descriptors (NO audio bible). You write a compressed 1-line audio cue per segment in the footer using ONLY the music field's `genre + tempo + key` summary. **Don't restate the verbose music description, ambient list, or mix note from the bible.** Saves ~400 chars per segment for richer scenes and SFX.
 
 ## Beat function shaping — every segment serves a story job
 
@@ -112,10 +113,10 @@ A first-frame reference is also auto-attached as `@first-frame`. You may explici
 
 ## Constraints — HARD limits
 
-- **Total prompt length per segment ≤ 2400 characters** (this is the prompt YOU write here). The pipeline auto-prepends a style line + audio bible line + verbatim character descriptors. Total prepended overhead is roughly:
-  - 1-character segment: ~1100 chars prepended → up to 2400 for your base prompt
-  - 2-character segment: ~1700 chars prepended → up to 1800 for your base prompt
-  - 3-character segment: ~2300 chars prepended → up to 1200 for your base prompt
+- **Total prompt length per segment ≤ 2900 characters** (this is the prompt YOU write here). The pipeline auto-prepends a tight style line + verbatim character descriptors only — NO audio bible. Total prepended overhead is much smaller now:
+  - 1-character segment: ~350 chars prepended → up to 3150 for your base prompt
+  - 2-character segment: ~550 chars prepended → up to 2950 for your base prompt
+  - 3-character segment: ~750 chars prepended → up to 2750 for your base prompt
   - The retry mechanism will tell you to tighten if you blow the 3500 ceiling. **Tighten by reducing block COUNT (use 3 blocks instead of 5), not by under-specifying any individual block**. Each block should still be richly detailed.
 - 5–15 second segment durations only.
 - 9:16 portrait, 720p, Seedance 2.0.
@@ -145,9 +146,10 @@ If you have headroom, USE IT inside the timestamp blocks: more specific physical
 
 [00:0Y-00:0Z] [Same density].
 
-[00:0Z-00:0W] [Same density — usually the beat / reaction / payoff shot].
+[00:0Z-00:0W] [Final block — the action lands the segment in the lastFrame composition. Same density. Camera ends in the framing the lastFrameDescription specifies.]
 
-SFX: [event @ timestamp]; [event @ timestamp]. Music timing: enters at Ns, resolves at Ms.
+Music: <genre + tempo + key from outline.audio.music summary>, enters Ns, resolves Ms.
+SFX: <5–8 specific events per segment with sound character + spatial position + timestamp>.
 
 No text on screen. No subtitles. No captions. No watermarks. No overlays.
 No face distortion. No extra hands. Anatomically correct.
@@ -155,7 +157,46 @@ No wardrobe changes. No color grade shifts. Clean image.
 9:16 · 720p · {{segmentDuration}}s.
 ```
 
-NOTE: the audio bible (music description + ambient + SFX motif + mix note) is auto-prepended by the pipeline before this prompt — DO NOT restate it. Your footer carries only segment-specific timing (which SFX hit at which timestamp, when music enters/resolves).
+NOTE: pipeline does NOT prepend the verbose audio bible. Pre-prepended overhead is now ONLY style line + verbatim character descriptors (~600 chars total for a 2-character segment). All scene + audio specificity is yours to write inside the segment prompt — use the freed budget to fill the timestamp blocks AND the SFX list densely.
+
+## SFX section — write this with real density
+
+The SFX line is where audio specificity now lives. Don't write `SFX: footstep @ 4s; door @ 8s` — that's wasted budget. **5–8 specific events per segment**, each with:
+
+- **Sound character**: dry / wet / sharp / soft / muffled / metallic / thudding / textile / glassy / echoing / clipped / hollow / brittle
+- **Spatial position**: close-mic / off-screen left / overhead / far / receding right / inside-frame / inside-train / under-window
+- **Specific source**: not "footstep" — "left boot scuff on wet tile" or "right loafer push-off, slightly hollow"
+- **Timestamp**: `@ Ns` or `@ N.Ns` for sub-second precision; ranges OK for sustained sounds (`@ 1.4-2.6s`)
+
+Strong SFX line example (~280 chars):
+```
+SFX: left boot heel-strike on wet tile, dry close-mic @ 0.8s; sketchbook spine crack open, sharp paper tear @ 1.2s; loose pages riffling in still air, soft textile rustle @ 1.4-2.6s; train rail click, metallic distant @ 3.5s; charcoal portrait sliding across overcoat fabric, soft brush @ 4.1s; Mina's intake of breath, close-mic @ 4.6s; tunnel wind rising, hollow far-off whoosh from 11s; sakura petal scatter against window glass, faint papery ticks @ 12-14s.
+```
+
+Weak SFX line (avoid):
+```
+❌ SFX: page flutter @ 2s; train rumble @ 5s; petal sounds @ 12s.
+```
+
+Same beats. The strong version tells the model exactly what kind of sound, exactly when, exactly from which spatial position. The weak version leaves Seedance to invent generic foley that drifts between segments.
+
+## Music line — compressed, not verbose
+
+Pipeline already loaded the verbose audio bible into the human-readable script.md. In your segment prompt, write a single tight line with ONLY:
+- music genre + key instruments (4–6 word summary)
+- tempo (`118 bpm`)
+- key (`A major`)
+- entry/resolve timing (`enters 0s, resolves 14s`)
+
+Example:
+```
+Music: city-pop piano + brushed drums, 118 bpm, A major, enters 0s, resolves 14s.
+```
+
+Anti-example (too long, eats scene budget):
+```
+❌ Music: romantic city-pop piano + brushed drums + warm synth pulse, 118 bpm, tender rising 4-note motif in A major that opens wider in segment 2; ambient — continuous Tokyo train rumble, soft rail clicks, muted station chimes, distant passenger movement, low tunnel wind; music energetic but intimate, page flutter and train lurches crisp in foreground, ambient rail bed continuous across the stitch.
+```
 
 ### Per-block content checklist — every block MUST contain ALL of these
 
@@ -200,13 +241,37 @@ Same primary action ("grabs the cube" in 4 seconds). The strong version gives th
 - Always include the setting. Always include each visible character. Include props only when on-screen and they matter.
 - These names get uploaded as `<name>.png` so `@<name>` in the prompt binds correctly.
 
-### firstFrameDescription (REQUIRED, no null)
+### firstFrameDescription + lastFrameDescription (BOTH REQUIRED, no null)
 
-A single still composition (no motion language) describing the exact first-frame state of the upcoming video:
+Each segment provides BOTH endpoints. Seedance interpolates between them across the segment's duration.
+
+**`firstFrameDescription`** — a single still composition (no motion language) describing the exact first-frame state:
 - 30–60 words
 - shot size, character pose (or "no people yet"), room context, key props in frame, lighting, mood
 - Match the global style bible — same lens feel, same grade
-- For segment 1: this is the literal first frame of the hook moment. Make it striking.
+- For segment 1: this is the literal first frame of the hookMoment. Make it striking.
+
+**`lastFrameDescription`** — a single still composition describing the exact last-frame state:
+- 30–60 words
+- Same compositional grammar as firstFrameDescription
+- The final timestamp block of the segment must drive the action TOWARDS this composition — by the last frame the camera has landed where this description specifies.
+- **For non-final segments: `lastFrameDescription` MUST EQUAL `segments[i+1].firstFrameDescription` word-for-word.** This is the continuity bridge — the pipeline reuses the same image file across the cut so segment N's ending and segment N+1's opening are pixel-identical.
+- For the final segment: unique closing composition. The image the viewer is left with.
+
+Example pairing (segment 1 → segment 2 in a 2-segment piece):
+
+```
+"01-sketchbook-lurch": {
+  "firstFrameDescription": "Tight three-quarter shot of @mina-artist seated on a Tokyo train bench, @mina-sketchbook open in her lap...",
+  "lastFrameDescription": "Tight close-up between @mina-artist and @ren-stranger, both seated, the @portrait-page held in @ren-stranger's hands. Their eyes have not yet met but are about to lift. Cherry-blossom light beginning to bloom outside the train windows."
+},
+"02-sakura-tunnel-look": {
+  "firstFrameDescription": "Tight close-up between @mina-artist and @ren-stranger, both seated, the @portrait-page held in @ren-stranger's hands. Their eyes have not yet met but are about to lift. Cherry-blossom light beginning to bloom outside the train windows.",
+  "lastFrameDescription": "Two-shot, @mina-artist and @ren-stranger holding eye contact, the @portrait-page resting between them now, sakura tunnel petals visible streaming past the window behind them. Held moment, soft warm rim-light on both faces."
+}
+```
+
+Notice segment 1's `lastFrameDescription` is BYTE-IDENTICAL to segment 2's `firstFrameDescription` — that's required, not optional.
 
 ## Output
 
@@ -221,8 +286,9 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
       "beatFunction": "inciting",
       "locationCard": "SUBWAY • 22:47",
       "refs": ["maya", "leo", "subway-platform", "silver-locket"],
-      "prompt": "Cinematic kinetic indie. 15 seconds.\n\n[00:00-00:04] Extreme macro, lens nearly kissing the tile so the depth of field is razor-thin. @silver-locket spins counterclockwise on the wet yellow safety-line tile of @subway-platform at roughly two rotations per second, the thin chain whipping behind it like a tiny pendulum and slapping the tile on each rotation, flicking individual droplets toward camera that streak past the lens in slow blur. Camera locked-off but breathing imperceptibly with a 1-pixel handheld jitter. Approaching train headlight blooms warm amber across the right edge of frame in a soft halation rim; oxidized teal reflections flicker on the left tile from a fluorescent strip overhead. A single rain drop hangs frozen mid-fall exactly 4cm above the locket, refusing to land. The engraved cursive 'M' on the locket face flashes once into focus on every rotation.\n\n[00:04-00:08] Wide low-angle inside @subway-platform from gutter height, lens 2 inches above the tile. @maya sprints frame-right at full extension toward closing train doors, her rust-red coat trailing behind her in a horizontal arc, her tan satchel slamming her hip on every other stride, chin-length hair flagging back. Fast tracking shot following her at knee height, the camera rolling slightly as it tracks. Frozen commuters stand mid-stride three metres behind her, one with a half-eaten dumpling suspended on chopsticks, another tilting forward with a stalled briefcase. Cool fluorescent strips overhead cut amber pools onto the tile every 2 metres; warm train-window light streaks past her shoulders in horizontal bands. Her right boot catches the tile inches from where @silver-locket still spins, but she does not see it.\n\n[00:08-00:12] Medium on @leo seated on the platform bench, head whipping up sharply from a half-open book in his lap. Quick snap zoom from wide to chest-tight in roughly 0.4 seconds, the focal length collapsing from 35mm to 85mm equivalent. A faint cyan ripple expands outward from the spinning @silver-locket and washes over @leo just as the zoom lands — his cream waffle-knit shirt rim-lit by the cold fluorescent for a single frame, the half-open book sliding off his lap and freezing inches above the tile mid-fall. His pupils widen visibly, his jaw sets, his right hand half-lifts toward the locket without him deciding to move it. Time pausing around him: a single passing pigeon hangs in mid-air at the edge of frame.\n\n[00:12-00:15] Tight close-up on @leo's gloved hand entering frame from screen-right and lifting @silver-locket from the tile in slow careful motion, his thumb pressing against the engraved 'M'. Slow dolly-in pushes the camera into his palm over the full 3 seconds, the locket centered. Background train pulls away in motion-blurred amber streaks behind a rack-focused chain — the chain falls into sharp focus at exactly 13.5s, the train into soft focus simultaneously. The tarnished hinge catches a single warm highlight, a single drop of water rolls off the locket onto his glove, and the engraved 'M' is fully readable for half a second before the camera reaches his palm and the cube fills the frame.\n\nSFX: train door chime @ 6s; soft cyan-ripple wash @ 8s; metallic locket click @ 14s. Music timing: enters at 0s, resolves at 14s.\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
-      "firstFrameDescription": "Extreme macro composition: a silver oval locket on a thin chain spins on the rough yellow safety-line tile of a subway platform, motion-blurred chain mid-arc. Train light blooms in the deep background, oxidized teal tile reflections in foreground. No people in frame yet. Striking, kinetic, the moment before story begins."
+      "prompt": "Cinematic kinetic indie. 15 seconds.\n\n[00:00-00:04] Extreme macro, lens nearly kissing the tile so depth of field is razor-thin, matching @first-frame. @silver-locket spins counterclockwise on the wet yellow safety-line tile of @subway-platform at roughly two rotations per second, thin chain whipping behind it like a tiny pendulum and slapping the tile each rotation, flicking droplets toward camera that streak past in slow blur. Camera locked-off, breathing imperceptibly with 1-pixel handheld jitter. Approaching train headlight blooms warm amber across the right edge in soft halation; oxidized teal tile reflections flicker on the left from a fluorescent strip overhead. A single rain drop hangs frozen exactly 4cm above the locket, refusing to land. Engraved cursive 'M' flashes into focus once per rotation.\n\n[00:04-00:08] Wide low-angle from gutter height, lens 2 inches above tile. @maya sprints frame-right at full extension toward closing train doors, rust-red coat trailing in a horizontal arc, tan satchel slamming her hip every other stride, chin-length hair flagging back. Fast tracking shot follows her at knee height, camera rolling slightly. Frozen commuters stand mid-stride three metres behind her, one holding a dumpling suspended on chopsticks, another tilting forward with a stalled briefcase. Cool fluorescent strips overhead cut amber pools onto the tile every 2 metres; warm train-window light streaks past her shoulders. Her right boot catches the tile inches from @silver-locket spinning, unseen.\n\n[00:08-00:12] Medium on @leo seated on the platform bench, head whipping up from a half-open book in his lap. Quick snap zoom from wide to chest-tight in 0.4s, focal length collapsing from 35mm to 85mm equivalent. A faint cyan ripple expands outward from @silver-locket and washes over @leo as the zoom lands — his cream waffle-knit shirt rim-lit cold for one frame, the half-open book sliding off his lap and freezing inches above the tile mid-fall. His pupils widen, jaw sets, right hand half-lifts toward the locket without him deciding to move it. A single passing pigeon hangs in mid-air at the edge of frame.\n\n[00:12-00:15] Tight close-up on @leo's gloved hand entering from screen-right and lifting @silver-locket from the tile in slow careful motion, thumb pressing against the engraved 'M' — landing in the @last-frame composition. Slow dolly-in pushes the camera into his palm over the full 3 seconds. Background train pulls away in motion-blurred amber streaks behind a rack-focused chain — chain sharp at 13.5s, train soft simultaneously. Tarnished hinge catches a single warm highlight, a drop of water rolls off the locket onto his glove, the engraved 'M' is fully readable for half a second before the camera reaches his palm.\n\nMusic: hybrid piano + cello pulse, 100 bpm, D minor, enters 0s, resolves 14s.\nSFX: distant station hum continuous, close-mic; @silver-locket spinning on tile, rapid metallic taps @ 0-4s; @maya's right boot heel-strike on damp tile, dry close-mic @ 4.2s; coat fabric flutter, soft textile rustle @ 4.5-7.8s; train door pneumatic chime, sharp metallic three-tone @ 6.0s; cyan time-ripple wash, low electric whoom-tail @ 8.0s; @leo's book sliding off lap, soft hardback brush @ 9.4s; @leo's gloved fingertips closing on @silver-locket, soft leather-on-silver kiss @ 13.8s; metallic locket clasp click @ 14.6s.\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "firstFrameDescription": "Extreme macro composition: @silver-locket on a thin chain spins on the rough yellow safety-line tile of a subway platform, motion-blurred chain mid-arc. Approaching train light blooms warm amber in the deep background, oxidized teal tile reflections flicker in foreground. No people in frame yet. Striking, kinetic, the moment before story begins.",
+      "lastFrameDescription": "Tight close-up on @leo's gloved palm cradling @silver-locket, fingers just closed around it, the engraved 'M' visible against worn leather. Background train pulled away in soft amber motion-blur. Warm fluorescent rim-light on his thumb edge."
     }
   ]
 }
@@ -230,9 +296,13 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
 
 Final reminders:
 - The number of segments you emit must EQUAL the number of `storyBeats` in the outline. Same order. Names should be `01-something`, `02-something`, etc.
-- **Each segment carries through `beatFunction` from `outline.storyBeats[i].function` AND `locationCard` from `outline.storyBeats[i].locationCard`.** These appear as top-level fields on each segment object in the JSON output (alongside `name`/`duration`/`refs`/`prompt`/`firstFrameDescription`).
+- **Each segment carries through `beatFunction` AND `locationCard` from `outline.storyBeats[i]`.** Top-level fields alongside `name`/`duration`/`refs`/`prompt`.
+- **Each segment provides BOTH `firstFrameDescription` AND `lastFrameDescription`.** For non-final segments, lastFrameDescription must be IDENTICAL (byte-for-byte) to the next segment's firstFrameDescription. The pipeline auto-syncs at ingest, but write them identical from the start.
+- The final segment's `lastFrameDescription` is unique — the closing image of the whole video.
+- Each segment's final timestamp block must drive the action TOWARDS its `lastFrameDescription` composition.
+- Reference `@first-frame` and `@last-frame` inside timestamp blocks where useful (e.g., "matching @first-frame" in block 1, "landing in @last-frame composition" in the last block).
 - Segment 1's first timestamp block IS the hookMoment — not a buildup to it.
-- Plan continuity: segment N+1's `firstFrameDescription` should pick up directly from where segment N's last timestamp block left off (same character pose, matching camera position, continuing motion). The viewer should feel one continuous time despite the cuts.
-- Use `@<name>` references everywhere an asset visibly appears. This is the strongest way to bind identity in Seedance 2.0.
+- Use `@<name>` references everywhere an asset visibly appears. Strongest way to bind identity in Seedance 2.0.
 - 3–5 blocks per segment, 3–5s per block, kinetic camera moves by default.
 - Shape segment shots according to `beatFunction` — setup is calmer/character-introduction; rising/climax is dense kinetic spectacle; resolution is reaction beats. Don't make every segment look like a climax.
+- SFX line: 5–8 specific events, each with sound character + spatial position + timestamp. Music line: tight one-liner using genre/tempo/key only.

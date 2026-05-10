@@ -54,6 +54,17 @@ export async function runGenerate(manifest: Manifest, options: GenerateOptions):
     if (segment.firstFrameImagePath && existsSync(segment.firstFrameImagePath)) {
       refs.push({ name: "first-frame", path: segment.firstFrameImagePath });
     }
+    // Last frame uploaded as @last-frame so Seedance interpolates between
+    // first-frame and last-frame across the segment duration (model-level
+    // start↔end conditioning). For non-final segments this also = the next
+    // segment's first-frame, so cuts read as continuous time.
+    if (segment.lastFrameImagePath && existsSync(segment.lastFrameImagePath)) {
+      // Avoid uploading the same file twice if first and last happen to
+      // resolve to the same path (shouldn't happen in practice, but guard).
+      if (segment.lastFrameImagePath !== segment.firstFrameImagePath) {
+        refs.push({ name: "last-frame", path: segment.lastFrameImagePath });
+      }
+    }
     pending.push({
       index: i,
       name: segment.name,

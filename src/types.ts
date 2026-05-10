@@ -47,6 +47,8 @@ export interface Segment {
   refs: string[];                          // names of characters/settings/props to attach as references
   firstFrameDescription?: string;          // description for gpt-image-2 to render
   firstFrameImagePath?: string;            // populated by frames stage
+  lastFrameDescription?: string;           // ending-frame composition. For non-final segments, MUST equal segment[i+1].firstFrameDescription so the cut is invisible (Seedance interpolates between start/end frames; same end-as-next-start = seamless continuity).
+  lastFrameImagePath?: string;             // populated by frames stage; reused from next segment's firstFrameImagePath when descriptions match
   videoPath?: string;                       // populated by generate stage
   videoStatus?: "pending" | "done" | "failed";
   videoError?: string;

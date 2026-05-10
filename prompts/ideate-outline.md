@@ -109,18 +109,23 @@ The hookMoment lives in segment 1 regardless of which function it has — it's t
 
 ## Character description style (CRITICAL for cross-segment consistency)
 
-For every character, write **30–50 words** (target ~40) — tight, dense, identity-anchoring. Cover ALL of these compactly in one block:
-- exact age in years (not "young" or "old")
-- ethnicity + skin tone description
-- eye colour
-- hair colour, length, texture, style (compress to 4–6 words: e.g. "black wavy chin-length tucked")
-- complete clothing top-to-bottom in one phrase (e.g. "matte charcoal armored jacket, cargo pants, white high-tops")
-- 1–2 distinguishing features (scar, glasses, tattoo, posture)
+For every character, write **20–30 words** (target ~25) — extremely tight, identity-anchoring only. The `@<name>` reference image carries the visual identity; this text is just reinforcement against drift. Verbose descriptors eat the budget that should go to scene description and SFX.
 
-Tight phrasing example (~45 words):
-> "27yo Korean American man, light olive skin, dark brown eyes, black medium-length wavy hair tucked behind one ear; faded forest-green chore jacket over cream waffle-knit, slim black denim, brown Chelsea boots; thin tortoiseshell glasses, faint scar through left eyebrow, slight forward lean."
+Cover ALL of these in compact phrasing:
+- age in years
+- ethnicity + skin tone (one phrase)
+- eye colour (one or two words)
+- hair (compress to 3–5 words: e.g. "black wavy chin-length tucked")
+- clothing top-to-bottom in one short phrase
+- 1 distinguishing feature
 
-This descriptor is copied verbatim into every segment prompt that features the character. **Tight is better than verbose** — the `@<name>` reference image is loading the visual identity; the text descriptor reinforces, it doesn't carry the full burden. Verbose descriptors eat the budget that should go to scene description.
+Tight phrasing example (~25 words / ~150 chars):
+> "27yo Korean American, olive skin, dark eyes, black wavy chin-length hair; forest-green chore jacket, cream waffle-knit, black denim, Chelsea boots; tortoiseshell glasses."
+
+Anti-example (too verbose, will eat scene budget):
+> ❌ "27-year-old Korean American man, light olive skin with warm undertones, dark brown eyes, black medium-length wavy hair tucked loosely behind one ear, clean-shaven, wearing a faded forest-green chore jacket over a cream waffle-knit shirt, straight black denim trousers, and worn dark brown leather boots; thin round tortoiseshell glasses, faint scar through his left eyebrow, slightly careful posture."
+
+Same identity, half the chars. Use the tight form.
 
 ## Setting description style
 
@@ -188,6 +193,8 @@ A single global sound design that every segment shares — so audio doesn't rese
 - `mixNote`: one-line mix instruction. e.g. "music driving, foreground SFX punchy, ambient subtle"
 
 Seedance 2.0 generates audio per-segment from text. By specifying the same music + ambient layer in every prompt, the stitched output sounds like a single track, not 4 separate ones.
+
+**Note**: pass 2 doesn't restate this bible verbatim in every segment prompt (that was eating ~400 chars per segment). Instead, pass 2 writes a compressed 1-line audio cue per segment using just `genre + tempo + key` from your `music` field plus a tight ambient note. Your bible here stays verbose for human readability and to anchor pass 2's compressed restatement, but the prompt the model actually receives is leaner.
 
 ## Output
 
