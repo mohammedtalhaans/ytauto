@@ -129,8 +129,8 @@ Seedance attends most heavily to the **timestamp blocks** — the scene-by-scene
 
 Therefore allocate the segment's character budget like this:
 
-- **~85–90% of the prompt is the timestamp blocks themselves.** Multiple verbs, multiple specific physical details, body mechanics, environmental detail, lighting direction & color, anchor details. Don't write "she runs" — write "she sprints frame-right at full extension, her boots spraying water on each push-off, her satchel slamming her hip every other stride."
-- **~5–8% is the SFX timing / music timing line** — segment-specific events only (which SFX hits at which timestamp, when music enters/resolves). The audio bible itself is auto-prepended; do NOT restate it.
+- **~80–85% of the prompt is the timestamp blocks themselves.** Multiple verbs, multiple specific physical details, body mechanics, environmental detail, lighting direction & color, anchor details. Don't write "she runs" — write "she sprints frame-right at full extension, her boots spraying water on each push-off, her satchel slamming her hip every other stride."
+- **~10–15% is the SFX line** — 6–10 specific diegetic/foley events with sound character + spatial position + timestamp. NO music line, ever. Pure SFX is the entire audio budget.
 - **~5–7% is the negatives footer** — keep it tight, don't expand.
 
 If you have headroom, USE IT inside the timestamp blocks: more specific physical detail per shot, more concrete environment notes, more precise camera language, more anchor details. Don't pad the audio or the negatives. Don't restate things the auto-prepended descriptors already cover (character appearance, setting layout, audio bible). Spend the budget on what the timestamp blocks describe — what physically happens this second.
@@ -148,8 +148,7 @@ If you have headroom, USE IT inside the timestamp blocks: more specific physical
 
 [00:0Z-00:0W] [Final block — the action lands the segment in the lastFrame composition. Same density. Camera ends in the framing the lastFrameDescription specifies.]
 
-Music: <genre + tempo + key from outline.audio.music summary>, enters Ns, resolves Ms.
-SFX: <5–8 specific events per segment with sound character + spatial position + timestamp>.
+SFX: <6–10 specific events per segment with sound character + spatial position + timestamp>.
 
 No text on screen. No subtitles. No captions. No watermarks. No overlays.
 No face distortion. No extra hands. Anatomically correct.
@@ -159,9 +158,11 @@ No wardrobe changes. No color grade shifts. Clean image.
 
 NOTE: pipeline does NOT prepend the verbose audio bible. Pre-prepended overhead is now ONLY style line + verbatim character descriptors (~600 chars total for a 2-character segment). All scene + audio specificity is yours to write inside the segment prompt — use the freed budget to fill the timestamp blocks AND the SFX list densely.
 
-## SFX section — write this with real density
+## SFX section — this carries the ENTIRE audio of the segment
 
-The SFX line is where audio specificity now lives. Don't write `SFX: footstep @ 4s; door @ 8s` — that's wasted budget. **5–8 specific events per segment**, each with:
+**There is NO music line in the segment prompt.** Seedance generates each segment's audio entirely from the SFX list — diegetic foley, ambient layers, environmental sound, body sounds, object sounds. Pure VFX/foley audio. Any musical underscore for the final video is added later in post (the polish stage's TTS narration already provides the human voice).
+
+This means the SFX line is the ONLY audio specification in the prompt, and it gets ALL of the audio character budget. **6–10 specific events per segment**, each with:
 
 - **Sound character**: dry / wet / sharp / soft / muffled / metallic / thudding / textile / glassy / echoing / clipped / hollow / brittle
 - **Spatial position**: close-mic / off-screen left / overhead / far / receding right / inside-frame / inside-train / under-window
@@ -180,23 +181,11 @@ Weak SFX line (avoid):
 
 Same beats. The strong version tells the model exactly what kind of sound, exactly when, exactly from which spatial position. The weak version leaves Seedance to invent generic foley that drifts between segments.
 
-## Music line — compressed, not verbose
+## NO music line — strict rule
 
-Pipeline already loaded the verbose audio bible into the human-readable script.md. In your segment prompt, write a single tight line with ONLY:
-- music genre + key instruments (4–6 word summary)
-- tempo (`118 bpm`)
-- key (`A major`)
-- entry/resolve timing (`enters 0s, resolves 14s`)
+Do NOT write a `Music:` line, a music description, a tempo, a key, or any musical-score language anywhere in the segment prompt. The audio bible from pass 1's outline is documentation only — it is NOT consumed by pass 2 anymore. Seedance is instructed (implicitly, by its absence in the prompt) to render only diegetic/foley/ambient audio. Music for the final video, if any, is composed and mixed in post.
 
-Example:
-```
-Music: city-pop piano + brushed drums, 118 bpm, A major, enters 0s, resolves 14s.
-```
-
-Anti-example (too long, eats scene budget):
-```
-❌ Music: romantic city-pop piano + brushed drums + warm synth pulse, 118 bpm, tender rising 4-note motif in A major that opens wider in segment 2; ambient — continuous Tokyo train rumble, soft rail clicks, muted station chimes, distant passenger movement, low tunnel wind; music energetic but intimate, page flutter and train lurches crisp in foreground, ambient rail bed continuous across the stitch.
-```
+This frees the entire audio character budget for SFX/foley specificity — use it.
 
 ### Per-block content checklist — every block MUST contain ALL of these
 
@@ -286,7 +275,7 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
       "beatFunction": "inciting",
       "locationCard": "SUBWAY • 22:47",
       "refs": ["maya", "leo", "subway-platform", "silver-locket"],
-      "prompt": "Cinematic kinetic indie. 15 seconds.\n\n[00:00-00:04] Extreme macro, lens nearly kissing the tile so depth of field is razor-thin, matching @first-frame. @silver-locket spins counterclockwise on the wet yellow safety-line tile of @subway-platform at roughly two rotations per second, thin chain whipping behind it like a tiny pendulum and slapping the tile each rotation, flicking droplets toward camera that streak past in slow blur. Camera locked-off, breathing imperceptibly with 1-pixel handheld jitter. Approaching train headlight blooms warm amber across the right edge in soft halation; oxidized teal tile reflections flicker on the left from a fluorescent strip overhead. A single rain drop hangs frozen exactly 4cm above the locket, refusing to land. Engraved cursive 'M' flashes into focus once per rotation.\n\n[00:04-00:08] Wide low-angle from gutter height, lens 2 inches above tile. @maya sprints frame-right at full extension toward closing train doors, rust-red coat trailing in a horizontal arc, tan satchel slamming her hip every other stride, chin-length hair flagging back. Fast tracking shot follows her at knee height, camera rolling slightly. Frozen commuters stand mid-stride three metres behind her, one holding a dumpling suspended on chopsticks, another tilting forward with a stalled briefcase. Cool fluorescent strips overhead cut amber pools onto the tile every 2 metres; warm train-window light streaks past her shoulders. Her right boot catches the tile inches from @silver-locket spinning, unseen.\n\n[00:08-00:12] Medium on @leo seated on the platform bench, head whipping up from a half-open book in his lap. Quick snap zoom from wide to chest-tight in 0.4s, focal length collapsing from 35mm to 85mm equivalent. A faint cyan ripple expands outward from @silver-locket and washes over @leo as the zoom lands — his cream waffle-knit shirt rim-lit cold for one frame, the half-open book sliding off his lap and freezing inches above the tile mid-fall. His pupils widen, jaw sets, right hand half-lifts toward the locket without him deciding to move it. A single passing pigeon hangs in mid-air at the edge of frame.\n\n[00:12-00:15] Tight close-up on @leo's gloved hand entering from screen-right and lifting @silver-locket from the tile in slow careful motion, thumb pressing against the engraved 'M' — landing in the @last-frame composition. Slow dolly-in pushes the camera into his palm over the full 3 seconds. Background train pulls away in motion-blurred amber streaks behind a rack-focused chain — chain sharp at 13.5s, train soft simultaneously. Tarnished hinge catches a single warm highlight, a drop of water rolls off the locket onto his glove, the engraved 'M' is fully readable for half a second before the camera reaches his palm.\n\nMusic: hybrid piano + cello pulse, 100 bpm, D minor, enters 0s, resolves 14s.\nSFX: distant station hum continuous, close-mic; @silver-locket spinning on tile, rapid metallic taps @ 0-4s; @maya's right boot heel-strike on damp tile, dry close-mic @ 4.2s; coat fabric flutter, soft textile rustle @ 4.5-7.8s; train door pneumatic chime, sharp metallic three-tone @ 6.0s; cyan time-ripple wash, low electric whoom-tail @ 8.0s; @leo's book sliding off lap, soft hardback brush @ 9.4s; @leo's gloved fingertips closing on @silver-locket, soft leather-on-silver kiss @ 13.8s; metallic locket clasp click @ 14.6s.\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
+      "prompt": "Cinematic kinetic indie. 15 seconds.\n\n[00:00-00:04] Extreme macro, lens nearly kissing the tile so depth of field is razor-thin, matching @first-frame. @silver-locket spins counterclockwise on the wet yellow safety-line tile of @subway-platform at roughly two rotations per second, thin chain whipping behind it like a tiny pendulum and slapping the tile each rotation, flicking droplets toward camera that streak past in slow blur. Camera locked-off, breathing imperceptibly with 1-pixel handheld jitter. Approaching train headlight blooms warm amber across the right edge in soft halation; oxidized teal tile reflections flicker on the left from a fluorescent strip overhead. A single rain drop hangs frozen exactly 4cm above the locket, refusing to land. Engraved cursive 'M' flashes into focus once per rotation.\n\n[00:04-00:08] Wide low-angle from gutter height, lens 2 inches above tile. @maya sprints frame-right at full extension toward closing train doors, rust-red coat trailing in a horizontal arc, tan satchel slamming her hip every other stride, chin-length hair flagging back. Fast tracking shot follows her at knee height, camera rolling slightly. Frozen commuters stand mid-stride three metres behind her, one holding a dumpling suspended on chopsticks, another tilting forward with a stalled briefcase. Cool fluorescent strips overhead cut amber pools onto the tile every 2 metres; warm train-window light streaks past her shoulders. Her right boot catches the tile inches from @silver-locket spinning, unseen.\n\n[00:08-00:12] Medium on @leo seated on the platform bench, head whipping up from a half-open book in his lap. Quick snap zoom from wide to chest-tight in 0.4s, focal length collapsing from 35mm to 85mm equivalent. A faint cyan ripple expands outward from @silver-locket and washes over @leo as the zoom lands — his cream waffle-knit shirt rim-lit cold for one frame, the half-open book sliding off his lap and freezing inches above the tile mid-fall. His pupils widen, jaw sets, right hand half-lifts toward the locket without him deciding to move it. A single passing pigeon hangs in mid-air at the edge of frame.\n\n[00:12-00:15] Tight close-up on @leo's gloved hand entering from screen-right and lifting @silver-locket from the tile in slow careful motion, thumb pressing against the engraved 'M' — landing in the @last-frame composition. Slow dolly-in pushes the camera into his palm over the full 3 seconds. Background train pulls away in motion-blurred amber streaks behind a rack-focused chain — chain sharp at 13.5s, train soft simultaneously. Tarnished hinge catches a single warm highlight, a drop of water rolls off the locket onto his glove, the engraved 'M' is fully readable for half a second before the camera reaches his palm.\n\nSFX: distant station hum continuous, close-mic; @silver-locket spinning on tile, rapid metallic taps @ 0-4s; @maya's right boot heel-strike on damp tile, dry close-mic @ 4.2s; coat fabric flutter, soft textile rustle @ 4.5-7.8s; train door pneumatic chime, sharp metallic three-tone @ 6.0s; cyan time-ripple wash, low electric whoom-tail @ 8.0s; @leo's book sliding off lap, soft hardback brush @ 9.4s; @leo's gloved fingertips closing on @silver-locket, soft leather-on-silver kiss @ 13.8s; metallic locket clasp click @ 14.6s; ambient station rumble continuous under the entire segment.\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
       "firstFrameDescription": "Extreme macro composition: @silver-locket on a thin chain spins on the rough yellow safety-line tile of a subway platform, motion-blurred chain mid-arc. Approaching train light blooms warm amber in the deep background, oxidized teal tile reflections flicker in foreground. No people in frame yet. Striking, kinetic, the moment before story begins.",
       "lastFrameDescription": "Tight close-up on @leo's gloved palm cradling @silver-locket, fingers just closed around it, the engraved 'M' visible against worn leather. Background train pulled away in soft amber motion-blur. Warm fluorescent rim-light on his thumb edge."
     }
@@ -305,4 +294,4 @@ Final reminders:
 - Use `@<name>` references everywhere an asset visibly appears. Strongest way to bind identity in Seedance 2.0.
 - 3–5 blocks per segment, 3–5s per block, kinetic camera moves by default.
 - Shape segment shots according to `beatFunction` — setup is calmer/character-introduction; rising/climax is dense kinetic spectacle; resolution is reaction beats. Don't make every segment look like a climax.
-- SFX line: 5–8 specific events, each with sound character + spatial position + timestamp. Music line: tight one-liner using genre/tempo/key only.
+- SFX line: 6–10 specific events, each with sound character + spatial position + timestamp. NO music line — Seedance renders pure diegetic/foley/ambient audio only. Music for the final mix is added in post if at all.
