@@ -3,11 +3,17 @@ dist/
 runway-profile/
 projects/*/segments/*.mp4
 projects/*/final.mp4
+projects/*/final.raw.mp4
+projects/*/final.stitch.mp4
 projects/*/frames/*.png
 projects/*/artifacts/*.png
+projects/*/narration.mp3
+projects/*/narration.vtt
+projects/*/narration.ass
 projects/*/concat.txt
 projects/*/manifest.json.bak
 projects/*/debug-out/
+projects/*/run.log
 debug-out/
 *.log
 .DS_Store
