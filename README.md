@@ -28,6 +28,11 @@ End-to-end pipeline that turns a one-line idea into a finished, multi-segment Yo
                             │
                 ▼ stitch (ffmpeg concat)
                             │
+              ▼ polish (ffmpeg drawtext + edge-tts)
+     burn segment locationCards as on-screen text;
+     generate TTS narration; duck Seedance audio
+     and mix narration over the top
+                            │
                             ▼
                        final.mp4
 ```
@@ -38,14 +43,15 @@ No API keys for the LLMs/image gen — uses your **ChatGPT subscription** (via t
 
 ## What you need installed
 
-| Tool                | Why                                                         | Verify with         |
-|---------------------|-------------------------------------------------------------|---------------------|
-| Node 22+            | run the CLI                                                 | `node --version`    |
-| Codex CLI 0.129+    | text generation (ideate) and image generation (gpt-image-2) | `codex --version`   |
-| ChatGPT Plus / Pro  | required entitlement for image_gen tool inside Codex        | `codex login`       |
-| Runway subscription | actual video generation                                     | `runwayml.com`      |
-| ffmpeg              | stitch segments                                             | `ffmpeg -version`   |
-| Python 3.x          | (only used internally by Codex CLI image extraction)        | `python --version`  |
+| Tool                | Why                                                         | Verify with                |
+|---------------------|-------------------------------------------------------------|----------------------------|
+| Node 22+            | run the CLI                                                 | `node --version`           |
+| Codex CLI 0.129+    | text generation (ideate) and image generation (gpt-image-2) | `codex --version`          |
+| ChatGPT Plus / Pro  | required entitlement for image_gen tool inside Codex        | `codex login`              |
+| Runway subscription | actual video generation                                     | `runwayml.com`             |
+| ffmpeg              | stitch segments + polish (drawtext + audio mix)             | `ffmpeg -version`          |
+| Python 3.x          | Codex CLI image extraction + edge-tts narration             | `python --version`         |
+| edge-tts            | free TTS (Microsoft Azure neural voices, no API key)        | `pip install edge-tts`     |
 
 ---
 
@@ -56,6 +62,7 @@ git clone <this-repo>
 cd ytauto
 npm install
 npx playwright install chromium
+pip install edge-tts          # free TTS for the polish stage's narration
 npm run build
 
 # Sign into Runway inside the Playwright Chrome profile (one-time)
@@ -96,7 +103,7 @@ When `run` finishes, your video is at `projects\<slug>\final.mp4`.
 ```
 ytauto new "<idea>" [--segments N] [--slug <slug>]
 ytauto run <slug> [--concurrency N] [--profile <dir>]
-ytauto stage <slug> <ideate|artifacts|frames|generate|stitch> [--concurrency N]
+ytauto stage <slug> <ideate|artifacts|frames|generate|stitch|polish> [--concurrency N]
 ytauto list
 ytauto show <slug>
 ytauto login [--profile <dir>]
@@ -241,6 +248,23 @@ Under the hood, refs are uploaded to Runway as `<name>.png` (the artifact file i
 The first-frame is auto-attached as `@first-frame`. Pass 2 may explicitly cite it in segment 1's opening block to lock the visual start.
 
 This is implemented per the [pexoai `seedance-2.0-prompter` skill](https://github.com/pexoai/pexo-skills/tree/main/skills/seedance-2.0-prompter) — atomic-element mapping (subject identity → asset reference, camera language → text, scene → hybrid, etc.).
+
+---
+
+## Story comprehension (narration + title cards + beat structure + continuity)
+
+Pure visual storytelling can't communicate plot in 60 seconds with multiple cuts — even with great cinematography, viewers experience 4 cool unrelated shots, not a story. The pipeline solves this on four axes:
+
+1. **TTS narration over the video.** Pass 1 of ideate emits a `narrationScript` paced to the total video length (~2 words/second of footage). The polish stage generates this as TTS via [edge-tts](https://github.com/rany2/edge-tts) (free, Microsoft Azure neural voices, no API key) and mixes it into `final.mp4`, ducking the Seedance music to ~30%. This carries the "who/what/why/stakes/payoff" that visuals alone can't.
+2. **On-screen title + location cards.** Each segment can have a `locationCard` field (`"PENTHOUSE • FLOOR 87"`, `"ROOFTOP — 12s LEFT"`) that the polish stage burns onto the bottom-left for ~3 seconds at the start of the segment. The whole video can also have a project-level `titleCard` that replaces segment 1's card to introduce the piece. Tiny text overlay, enormous orientation lift.
+3. **Explicit beat structure.** `storyBeats` is now `[{function, description, locationCard}]` where `function` is `setup` / `inciting` / `rising` / `climax` / `resolution`. Pass 2 reads the function and shapes shots accordingly — setup segments are character-introductions with held shots and lower spectacle; climax segments are maximum-density VFX peaks; resolution segments anchor on character reaction. The visual rhythm across the 4 segments is what makes the stitched video feel like a story instead of 4 trailer shots.
+4. **Continuity bridging between segments.** Pass 2 is told to write each segment so segment N's last block ends in a pose/composition that segment N+1's `firstFrameDescription` deliberately picks up from. Cuts read as continuous time instead of hard jumps.
+
+The narration alone handles ~60% of the comprehension lift; cards add ~20%; beat structure + continuity carry the visual storytelling itself for ~20%. All four together are what make a 1-min multi-segment video actually communicate.
+
+To disable any of these: edit `manifest.defaults`. `narrate: false` skips TTS+mix. `titleCards: false` skips the drawtext overlay. The polish stage no-ops if both are off.
+
+To change voice: `manifest.defaults.narrationVoice` accepts any [edge-tts voice ID](https://github.com/rany2/edge-tts#changing-voices) (e.g. `"en-US-GuyNeural"` for male, `"en-US-DavisNeural"`, `"en-GB-SoniaNeural"`, etc.).
 
 ---
 

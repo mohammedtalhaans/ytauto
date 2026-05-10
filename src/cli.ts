@@ -7,6 +7,7 @@ import { runArtifacts } from "./stages/artifacts.js";
 import { runFrames } from "./stages/frames.js";
 import { runGenerate } from "./stages/generate.js";
 import { runStitch } from "./stages/stitch.js";
+import { runPolish } from "./stages/polish.js";
 import { launchContext, waitForLogin } from "./runway.js";
 import { STAGE_ORDER, type Manifest, type StageName } from "./types.js";
 
@@ -63,11 +64,12 @@ Usage:
   ytauto login [--profile <dir>]
 
 Pipeline stages (idempotent, re-runnable):
-  ideate     — codex generates title, characters, settings, segments
-  artifacts  — gpt-image-2 generates a reference image per character/setting
-  frames     — gpt-image-2 generates a first-frame still per segment (if requested)
+  ideate     — codex generates title, characters, settings, segments, narration
+  artifacts  — gpt-image-2 generates a reference image per character/setting/prop
+  frames     — gpt-image-2 generates a first-frame still per segment
   generate   — Runway Seedance 2.0 generates each segment in parallel (max 2)
   stitch     — ffmpeg concats segments into final.mp4
+  polish     — burn title cards + mix TTS narration (edge-tts) into final.mp4
 `);
 }
 
@@ -171,6 +173,9 @@ async function runStage(
       return;
     case "stitch":
       await runStitch(manifest, { cwd: ctx.cwd, log: ctx.log });
+      return;
+    case "polish":
+      await runPolish(manifest, { cwd: ctx.cwd, log: ctx.log });
       return;
   }
 }

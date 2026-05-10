@@ -4,58 +4,71 @@
   "title": "Memory Blade",
   "logline": "A cybernetic samurai assassin cuts through a holographic Tokyo penthouse to recover a stolen memory crystal before a corporate director uploads it into the city grid.",
   "createdAt": "2026-05-09T23:30:49.165Z",
-  "updatedAt": "2026-05-09T23:33:19.163Z",
+  "updatedAt": "2026-05-10T14:50:28.707Z",
   "defaults": {
     "model": "seedance-2",
     "aspect": "9:16",
     "duration": 15,
     "resolution": "1080p",
-    "upscale": true
+    "upscale": true,
+    "narrate": true,
+    "titleCards": true,
+    "narrationVoice": "en-US-AriaNeural"
   },
   "characters": [
     {
       "name": "mika-kurogane",
-      "description": "31yo Japanese woman, pale warm skin, steel-grey eyes, black straight shoulder-length hair in high half-knot; matte black segmented samurai armor over charcoal bodysuit, armored tabi boots; chrome left forearm, thin scar under right eye, still predatory posture."
+      "description": "31yo Japanese woman, pale warm skin, steel-grey eyes, black straight shoulder-length hair in high half-knot; matte black segmented samurai armor over charcoal bodysuit, armored tabi boots; chrome left forearm, thin scar under right eye, still predatory posture.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\character-mika-kurogane.png"
     },
     {
       "name": "director-saito",
-      "description": "46yo Japanese man, cool beige skin, amber-brown eyes, silver-black slicked-back short hair; ivory tech-weave suit, black collarless shirt, polished graphite shoes; gold neural ports along temples, immaculate posture, faint surgical smile."
+      "description": "46yo Japanese man, cool beige skin, amber-brown eyes, silver-black slicked-back short hair; ivory tech-weave suit, black collarless shirt, polished graphite shoes; gold neural ports along temples, immaculate posture, faint surgical smile.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\character-director-saito.png"
     },
     {
       "name": "onyx-guards",
-      "description": "32yo Japanese-Korean clone enforcers, medium tan skin, dark brown eyes, black buzz-cut hair under visored helmets; glossy onyx tactical armor, grey undersuits, magnetic boots; identical jaw tattoos, rigid synchronized stance, compact pulse rifles."
+      "description": "32yo Japanese-Korean clone enforcers, medium tan skin, dark brown eyes, black buzz-cut hair under visored helmets; glossy onyx tactical armor, grey undersuits, magnetic boots; identical jaw tattoos, rigid synchronized stance, compact pulse rifles.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\character-onyx-guards.png"
     }
   ],
   "settings": [
     {
       "name": "holographic-penthouse-atrium",
-      "description": "triple-height Tokyo penthouse atrium with minimalist corporate architecture, black marble floor, floating koi holograms, glass display cube, sunken lounge, chrome bonsai sculpture. Midnight rain outside, cyan and magenta hologram light over obsidian, electric blue, polished silver."
+      "description": "triple-height Tokyo penthouse atrium with minimalist corporate architecture, black marble floor, floating koi holograms, glass display cube, sunken lounge, chrome bonsai sculpture. Midnight rain outside, cyan and magenta hologram light over obsidian, electric blue, polished silver.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\setting-holographic-penthouse-atrium.png"
     },
     {
       "name": "neon-skybridge-hall",
-      "description": "narrow glass skybridge hallway suspended above Tokyo, angular steel ribs, reflective floor panels, abstract ad projections, ceiling mist vents, security drone rails. Night city glow and cold white strip lights create violet, cyan, and wet-black reflections."
+      "description": "narrow glass skybridge hallway suspended above Tokyo, angular steel ribs, reflective floor panels, abstract ad projections, ceiling mist vents, security drone rails. Night city glow and cold white strip lights create violet, cyan, and wet-black reflections.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\setting-neon-skybridge-hall.png"
     },
     {
       "name": "gravity-security-corridor",
-      "description": "long penthouse security corridor in brutalist luxury style, ribbed concrete walls, levitating marble benches, broken mirror panels, weapon lockers, red sensor lasers. Emergency strobes and rain-lit windows cast crimson, gunmetal, and ice-blue light."
+      "description": "long penthouse security corridor in brutalist luxury style, ribbed concrete walls, levitating marble benches, broken mirror panels, weapon lockers, red sensor lasers. Emergency strobes and rain-lit windows cast crimson, gunmetal, and ice-blue light.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\setting-gravity-security-corridor.png"
     },
     {
       "name": "memory-vault-terrace",
-      "description": "open-air rooftop vault terrace with circular carbon-fiber upload dais, transparent blast screens, bonsai planters, antenna spires, shallow rainwater pooling on black stone. Stormy pre-dawn skyline glows cyan, violet, and pale silver."
+      "description": "open-air rooftop vault terrace with circular carbon-fiber upload dais, transparent blast screens, bonsai planters, antenna spires, shallow rainwater pooling on black stone. Stormy pre-dawn skyline glows cyan, violet, and pale silver.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\setting-memory-vault-terrace.png"
     }
   ],
   "props": [
     {
       "name": "memory-crystal",
-      "description": "thumb-sized faceted crystal of translucent cyan glass, hexagonal teardrop shape, hairline gold circuitry suspended inside, one chipped corner pulsing brighter than the rest; usually floating in a display field or clenched in Mika's cybernetic palm."
+      "description": "thumb-sized faceted crystal of translucent cyan glass, hexagonal teardrop shape, hairline gold circuitry suspended inside, one chipped corner pulsing brighter than the rest; usually floating in a display field or clenched in Mika's cybernetic palm.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\prop-memory-crystal.png"
     },
     {
       "name": "plasma-katana",
-      "description": "black carbon katana hilt with brushed titanium guard, blade ignites as a metre-long magenta plasma edge with a white-hot core and violet afterimage; usually drawn from Mika's back sheath or cutting luminous arcs through frame."
+      "description": "black carbon katana hilt with brushed titanium guard, blade ignites as a metre-long magenta plasma edge with a white-hot core and violet afterimage; usually drawn from Mika's back sheath or cutting luminous arcs through frame.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\prop-plasma-katana.png"
     },
     {
       "name": "fox-infiltration-mask",
-      "description": "matte white cyber-fox half-mask with hairline cracks, black ceramic cheek vents, tiny red optical sensors, and a faint chrome mouth seam; usually clipped to Mika's face during stealth, then hanging at her collar during combat."
+      "description": "matte white cyber-fox half-mask with hairline cracks, black ceramic cheek vents, tiny red optical sensors, and a faint chrome mouth seam; usually clipped to Mika's face during stealth, then hanging at her collar during combat.",
+      "imagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\artifacts\\prop-fox-infiltration-mask.png"
     }
   ],
   "segments": [
@@ -73,7 +86,12 @@
         "memory-crystal",
         "fox-infiltration-mask"
       ],
-      "firstFrameDescription": "Extreme macro still: @memory-crystal floats inches from lens inside a glass display cube in @holographic-penthouse-atrium, its chipped corner glowing cyan-white. Reflected black marble and ghostly koi distort across the cube surface. No people fully visible, only a dark eye reflection in one facet."
+      "firstFrameDescription": "Extreme macro still: @memory-crystal floats inches from lens inside a glass display cube in @holographic-penthouse-atrium, its chipped corner glowing cyan-white. Reflected black marble and ghostly koi distort across the cube surface. No people fully visible, only a dark eye reflection in one facet.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\frames\\01-crystal-eruption.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\segments\\01-crystal-eruption.mp4",
+      "videoStatus": "done",
+      "locationCard": "60 SECONDS TO MEMORY ZERO",
+      "beatFunction": "inciting"
     },
     {
       "name": "02-plasma-atrium-cut",
@@ -92,7 +110,12 @@
         "plasma-katana",
         "fox-infiltration-mask"
       ],
-      "firstFrameDescription": "Wide low-angle still inside @holographic-penthouse-atrium: @mika-kurogane crouches on wet black marble near the display cube, one hand near her back sheath, while @onyx-guards enter through distant glass doors. Cyan koi holograms and magenta alarm light streak across the floor."
+      "firstFrameDescription": "Wide low-angle still inside @holographic-penthouse-atrium: @mika-kurogane crouches on wet black marble near the display cube, one hand near her back sheath, while @onyx-guards enter through distant glass doors. Cyan koi holograms and magenta alarm light streak across the floor.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\frames\\02-plasma-atrium-cut.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\segments\\02-plasma-atrium-cut.mp4",
+      "videoStatus": "done",
+      "locationCard": "SAITO TOWER • 02:14",
+      "beatFunction": "rising"
     },
     {
       "name": "03-gravity-corridor-reversal",
@@ -109,7 +132,12 @@
         "memory-crystal",
         "plasma-katana"
       ],
-      "firstFrameDescription": "Long tilted still inside @gravity-security-corridor: @mika-kurogane is already running along the left wall, body horizontal to the floor, @memory-crystal glowing in her chrome fist. @onyx-guards aim from the far end under crimson strobes, with marble benches floating midair."
+      "firstFrameDescription": "Long tilted still inside @gravity-security-corridor: @mika-kurogane is already running along the left wall, body horizontal to the floor, @memory-crystal glowing in her chrome fist. @onyx-guards aim from the far end under crimson strobes, with marble benches floating midair.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\frames\\03-gravity-corridor-reversal.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\segments\\03-gravity-corridor-reversal.mp4",
+      "videoStatus": "done",
+      "locationCard": "GRAVITY HALL — 28s LEFT",
+      "beatFunction": "climax"
     },
     {
       "name": "04-memory-vault-escape",
@@ -126,7 +154,12 @@
         "memory-crystal",
         "plasma-katana"
       ],
-      "firstFrameDescription": "Medium low-angle still on @memory-vault-terrace: @director-saito stands centered on the circular upload dais with @memory-crystal floating in a cyan beam above rain-slick black stone. @mika-kurogane is half-hidden behind a transparent blast screen, katana silhouette low, skyline glowing behind them."
+      "firstFrameDescription": "Medium low-angle still on @memory-vault-terrace: @director-saito stands centered on the circular upload dais with @memory-crystal floating in a cyan beam above rain-slick black stone. @mika-kurogane is half-hidden behind a transparent blast screen, katana silhouette low, skyline glowing behind them.",
+      "firstFrameImagePath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\frames\\04-memory-vault-escape.png",
+      "videoPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\segments\\04-memory-vault-escape.mp4",
+      "videoStatus": "done",
+      "locationCard": "VAULT TERRACE • DAWN",
+      "beatFunction": "resolution"
     }
   ],
   "stages": {
@@ -135,16 +168,24 @@
       "completedAt": "2026-05-09T23:32:41.743Z"
     },
     "artifacts": {
-      "status": "running"
+      "status": "done",
+      "completedAt": "2026-05-09T23:58:12.716Z"
     },
     "frames": {
-      "status": "pending"
+      "status": "done",
+      "completedAt": "2026-05-10T00:07:16.051Z"
     },
     "generate": {
-      "status": "pending"
+      "status": "done",
+      "completedAt": "2026-05-10T01:07:32.836Z"
     },
     "stitch": {
-      "status": "pending"
+      "status": "done",
+      "completedAt": "2026-05-10T01:07:33.722Z"
+    },
+    "polish": {
+      "status": "done",
+      "completedAt": "2026-05-10T14:50:28.707Z"
     }
   },
   "hookMoment": "At 0s, the stolen memory crystal spins inches from camera inside a glass display cube, then violently projects a full-size ghost of Mika's childhood memory into the penthouse air as alarms fracture the room into cyan holographic shards.",
@@ -172,5 +213,8 @@
     "ambient": "continuous rainy Tokyo rooftop hum, distant traffic far below, electrical transformer buzz, muffled thunder through glass",
     "sfxMotif": "the crystalline three-note chime of the memory crystal, recurring whenever it moves, pulses, or changes hands",
     "mixNote": "music relentless and cohesive, blade impacts and crystal chimes sharp in foreground, city rain and electrical ambience underneath"
-  }
+  },
+  "finalPath": "C:\\Users\\Talha\\Documents\\yt automation\\ytauto\\projects\\a-one-minute-cinematic-short-a-cybernetic-samurai-assassin-i\\final.mp4",
+  "titleCard": "60 SECONDS TO MEMORY ZERO",
+  "narrationScript": "Tokyo, 2087. Memory has a price - and Mika just stole it. The crystal in her palm holds a stranger's life, fifteen years of love and loss compressed into a heartbeat. Director Saito wants it back. His enforcers do too. So she runs. Through holographic walls she carves with plasma. Down corridors where gravity itself is a weapon. Up to the rooftop where the memory wakes. And turns out to be hers. The childhood Saito erased. The face she's been chasing without knowing why. She holds it for one breath. Then she lets it go. The city resumes. And Mika, finally, is whole."
 }

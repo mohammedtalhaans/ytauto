@@ -30,6 +30,37 @@ Emit one segment per `storyBeats` entry, in order. Each segment must:
 4. **Always** include a `firstFrameDescription` (no `null` allowed in this pipeline). Every segment is anchored to a specific first-frame still.
 5. **Don't** restate the audio bible verbatim — the pipeline prepends `music`/`ambient`/`sfxMotif`/`mix` once at the top. Your `Sound:` / `Music:` footer lines only carry segment-specific timestamps (e.g. `SFX: train door chime @ 6s; locket click @ 14s. Music timing: enters at 0s, resolves at 14s.`). Saves ~300 chars per segment that goes into denser scene blocks.
 
+## Beat function shaping — every segment serves a story job
+
+The outline's `storyBeats[i]` has a `function` tag (`setup` / `inciting` / `rising` / `climax` / `resolution`). The function determines the SHAPE of the segment's shots — independent of how flashy the spectacle is. Render shots that match the function:
+
+- **`setup`** segments establish POV character + world + want. Open on the character; one held shot of them in their normal life; secondary shot of their environment; a small action that reveals their personality. Lower spectacle density. Pacing slightly slower than other segments.
+- **`inciting`** segments deliver the disruption. The first 1-2 blocks are the "before"; the last 2-3 blocks are the moment everything changes. Camera pushes IN on the change. Spectacle peaks at the disruption.
+- **`rising`** segments escalate. Multi-action throughout — chase, fight, discovery escalating. Camera kinetic from frame 1. Cut between the protagonist and the obstacle so the viewer feels the squeeze.
+- **`climax`** segments are the peak action / decision / VFX moment. Maximum visual density. Every block has a spectacle moment. The trailer-cut shots live here.
+- **`resolution`** segments anchor on character reaction to the climax. Calmer first 2 blocks (the dust settles), then ONE final shot that lands the meaning visually — a held look, a cut to a remembered face, an object dropped, a horizon. The viewer needs to see what the climax MEANT.
+
+When pass 2 receives `function: "setup"`, it should NOT try to make that segment look like a climax — that flattens the arc. The visual rhythm across the 4 segments is what makes the stitched video feel like a story rather than 4 cool unrelated shots.
+
+## Continuity bridging (segments must feel continuous)
+
+Each segment is rendered independently from a static first-frame, then stitched. To prevent hard-cut "4 unrelated shots" feel, you write each segment so the cut TO the next one feels like a continuous moment in time:
+
+- **Segment N's last timestamp block** ends in a specific pose/composition/camera position.
+- **Segment N+1's `firstFrameDescription`** picks up directly from that pose — same character pose, similar camera position, matching lighting energy. Then segment N+1's first timestamp block continues the motion.
+
+Examples:
+- Segment 1 ends: "She lifts the cube to her face, her eyes widening, the camera tight on her left iris reflecting the cyan glow."
+  Segment 2's firstFrame: "Tight on @mika-sato's left eye, cyan reflection still glowing in the iris from the previous moment, camera just beginning to pull back."
+  Segment 2 block 1: "Camera pulls back from her eye to reveal she is now mid-stride in @neon-service-alley..."
+- Segment 3 ends: "She vaults over the parapet, the camera following her into open sky."
+  Segment 4's firstFrame: "Mid-air over @clock-tower-shrine rooftop, @mika-sato's body extended in flight against the dawn sky, hair trailing."
+  Segment 4 block 1: "She lands hard on @clock-tower-shrine's stone, knees folding..."
+
+This isn't optional — without continuity bridging the video feels disjointed. Plan all 4 segments together so each ENDS in a way the next CAN pick up.
+
+The polish stage also burns a short location/time card (`storyBeats[i].locationCard`) over each segment's first 3 seconds, but the visual cut is what makes the story flow — the card is just orientation.
+
 ## Hook execution — segment 1 only, MANDATORY
 
 Segment 1's **first timestamp block** MUST be 3–5 seconds long and execute the outline's `hookMoment` literally. The block's content is the kinetic, eye-catching opening — not an establishing shot, not slow contemplation. Visually arresting from frame 1.
@@ -187,6 +218,8 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
     {
       "name": "01-platform-spin",
       "duration": 15,
+      "beatFunction": "inciting",
+      "locationCard": "SUBWAY • 22:47",
       "refs": ["maya", "leo", "subway-platform", "silver-locket"],
       "prompt": "Cinematic kinetic indie. 15 seconds.\n\n[00:00-00:04] Extreme macro, lens nearly kissing the tile so the depth of field is razor-thin. @silver-locket spins counterclockwise on the wet yellow safety-line tile of @subway-platform at roughly two rotations per second, the thin chain whipping behind it like a tiny pendulum and slapping the tile on each rotation, flicking individual droplets toward camera that streak past the lens in slow blur. Camera locked-off but breathing imperceptibly with a 1-pixel handheld jitter. Approaching train headlight blooms warm amber across the right edge of frame in a soft halation rim; oxidized teal reflections flicker on the left tile from a fluorescent strip overhead. A single rain drop hangs frozen mid-fall exactly 4cm above the locket, refusing to land. The engraved cursive 'M' on the locket face flashes once into focus on every rotation.\n\n[00:04-00:08] Wide low-angle inside @subway-platform from gutter height, lens 2 inches above the tile. @maya sprints frame-right at full extension toward closing train doors, her rust-red coat trailing behind her in a horizontal arc, her tan satchel slamming her hip on every other stride, chin-length hair flagging back. Fast tracking shot following her at knee height, the camera rolling slightly as it tracks. Frozen commuters stand mid-stride three metres behind her, one with a half-eaten dumpling suspended on chopsticks, another tilting forward with a stalled briefcase. Cool fluorescent strips overhead cut amber pools onto the tile every 2 metres; warm train-window light streaks past her shoulders in horizontal bands. Her right boot catches the tile inches from where @silver-locket still spins, but she does not see it.\n\n[00:08-00:12] Medium on @leo seated on the platform bench, head whipping up sharply from a half-open book in his lap. Quick snap zoom from wide to chest-tight in roughly 0.4 seconds, the focal length collapsing from 35mm to 85mm equivalent. A faint cyan ripple expands outward from the spinning @silver-locket and washes over @leo just as the zoom lands — his cream waffle-knit shirt rim-lit by the cold fluorescent for a single frame, the half-open book sliding off his lap and freezing inches above the tile mid-fall. His pupils widen visibly, his jaw sets, his right hand half-lifts toward the locket without him deciding to move it. Time pausing around him: a single passing pigeon hangs in mid-air at the edge of frame.\n\n[00:12-00:15] Tight close-up on @leo's gloved hand entering frame from screen-right and lifting @silver-locket from the tile in slow careful motion, his thumb pressing against the engraved 'M'. Slow dolly-in pushes the camera into his palm over the full 3 seconds, the locket centered. Background train pulls away in motion-blurred amber streaks behind a rack-focused chain — the chain falls into sharp focus at exactly 13.5s, the train into soft focus simultaneously. The tarnished hinge catches a single warm highlight, a single drop of water rolls off the locket onto his glove, and the engraved 'M' is fully readable for half a second before the camera reaches his palm and the cube fills the frame.\n\nSFX: train door chime @ 6s; soft cyan-ripple wash @ 8s; metallic locket click @ 14s. Music timing: enters at 0s, resolves at 14s.\n\nNo text on screen. No subtitles. No captions. No watermarks. No overlays.\nNo face distortion. No extra hands. Anatomically correct.\nNo wardrobe changes. No color grade shifts. Clean image.\n9:16 · 720p · 15s.",
       "firstFrameDescription": "Extreme macro composition: a silver oval locket on a thin chain spins on the rough yellow safety-line tile of a subway platform, motion-blurred chain mid-arc. Train light blooms in the deep background, oxidized teal tile reflections in foreground. No people in frame yet. Striking, kinetic, the moment before story begins."
@@ -197,6 +230,9 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
 
 Final reminders:
 - The number of segments you emit must EQUAL the number of `storyBeats` in the outline. Same order. Names should be `01-something`, `02-something`, etc.
+- **Each segment carries through `beatFunction` from `outline.storyBeats[i].function` AND `locationCard` from `outline.storyBeats[i].locationCard`.** These appear as top-level fields on each segment object in the JSON output (alongside `name`/`duration`/`refs`/`prompt`/`firstFrameDescription`).
 - Segment 1's first timestamp block IS the hookMoment — not a buildup to it.
+- Plan continuity: segment N+1's `firstFrameDescription` should pick up directly from where segment N's last timestamp block left off (same character pose, matching camera position, continuing motion). The viewer should feel one continuous time despite the cuts.
 - Use `@<name>` references everywhere an asset visibly appears. This is the strongest way to bind identity in Seedance 2.0.
 - 3–5 blocks per segment, 3–5s per block, kinetic camera moves by default.
+- Shape segment shots according to `beatFunction` — setup is calmer/character-introduction; rising/climax is dense kinetic spectacle; resolution is reaction beats. Don't make every segment look like a climax.

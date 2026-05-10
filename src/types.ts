@@ -1,5 +1,11 @@
-export type StageName = "ideate" | "artifacts" | "frames" | "generate" | "stitch";
+export type StageName = "ideate" | "artifacts" | "frames" | "generate" | "stitch" | "polish";
 export type StageStatus = "pending" | "running" | "done" | "failed" | "skipped";
+
+// Story-function tag — every segment serves one of these functions in the
+// narrative arc. Pass 1 assigns; pass 2 reads and renders shots whose
+// content matches the function (setup is a held character introduction,
+// climax is a kinetic VFX peak, resolution is a calmer reaction beat, etc.)
+export type BeatFunction = "setup" | "inciting" | "rising" | "climax" | "resolution";
 
 export type Aspect = "9:16" | "16:9" | "1:1" | "4:3" | "3:4" | "21:9";
 export type Resolution = "720p" | "1080p";
@@ -44,6 +50,14 @@ export interface Segment {
   videoPath?: string;                       // populated by generate stage
   videoStatus?: "pending" | "done" | "failed";
   videoError?: string;
+  // Story function this segment serves in the arc (setup/inciting/rising/climax/
+  // resolution). Pass 2 uses this to decide spectacle vs character-intro vs
+  // reaction-beat shaping.
+  beatFunction?: BeatFunction;
+  // 1-3 word location/time stamp burned in as on-screen text by the polish
+  // stage during this segment's window. e.g. "TOKYO • 02:14 AM",
+  // "PENTHOUSE — FLOOR 87", "60 SECONDS LEFT".
+  locationCard?: string;
 }
 
 export interface Manifest {
@@ -60,6 +74,10 @@ export interface Manifest {
     duration: number;
     resolution: Resolution;
     upscale: boolean;
+    // Polish stage controls — applied in src/stages/polish.ts after stitch.
+    narrate: boolean;             // mix TTS narration into final.mp4
+    narrationVoice: string;       // edge-tts voice id, e.g. "en-US-AriaNeural"
+    titleCards: boolean;          // burn segment locationCard as on-screen text
   };
   style?: StyleBible;
   audio?: AudioBible;
@@ -72,6 +90,14 @@ export interface Manifest {
   // renders them inside the relevant segment's timestamp blocks. Empty array
   // is allowed for genuinely subdued projects but most should have 2-6.
   spectacleHints?: string[];
+  // 60-90 word continuous narration script paced to total video duration.
+  // Polish stage generates TTS from this and ducks the Seedance audio under
+  // it. This is the primary mechanism for story comprehension — without
+  // narration, a 1-min multi-segment video reads as 4 cool unrelated shots.
+  narrationScript?: string;
+  // Optional 1-3 word burn-in title card shown across the whole video (e.g.
+  // "60 SECONDS TO SHIBUYA ZERO"). Per-segment cards live on Segment.
+  titleCard?: string;
   characters: Asset[];
   settings: Asset[];
   props: Asset[];                          // key objects (locket, letter, bouquet, etc.)
@@ -85,10 +111,13 @@ export const DEFAULT_DEFAULTS: Manifest["defaults"] = {
   aspect: "9:16",
   duration: 15,
   resolution: "1080p",
-  upscale: true
+  upscale: true,
+  narrate: true,
+  narrationVoice: "en-US-AriaNeural",
+  titleCards: true
 };
 
-export const STAGE_ORDER: StageName[] = ["ideate", "artifacts", "frames", "generate", "stitch"];
+export const STAGE_ORDER: StageName[] = ["ideate", "artifacts", "frames", "generate", "stitch", "polish"];
 
 // Runway driver types — mirror of videogen's ResolvedJob shape so runway.ts stays portable.
 //

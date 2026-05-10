@@ -82,11 +82,30 @@ Weak hooks to avoid:
 
 The hookMoment should ALSO connect to the story — segment 1's first 3–5s must execute it AND introduce the conflict / world / object that the rest of the video will resolve. Don't make it a disconnected attention-grab.
 
-## Story arc
+## Story arc — explicit beat functions (CRITICAL for comprehension)
 
-Plan as a short narrative with a clear beat per segment. Output `storyBeats` as an array of one short sentence per segment, in order. Each beat should describe what changes emotionally or narratively in that segment. The arc should escalate, resolve, or twist — not be flat.
+A 1-minute video with multiple cuts only feels like a story (instead of 4 cool unrelated shots) if every segment serves a clear story FUNCTION in the arc. Pure visual storytelling at this length cannot communicate plot via vibes — the audience needs each segment to have a specific narrative job.
 
-Beat 1 specifically should incorporate the hookMoment (the hook is segment 1's opening, not a separate prologue).
+Output `storyBeats` as an array of objects, one per segment, in order. Each entry has:
+- `function`: one of `setup` / `inciting` / `rising` / `climax` / `resolution`
+- `description`: one short sentence describing what physically happens in this segment
+
+The function tells pass 2 what KIND of shots to render. Each function has different cinematographic needs:
+
+- **`setup`** — establish POV character + their world + their want. Shots: character introduction, location establishment, character doing their thing in their normal life. Lower spectacle density. Held shots OK. The viewer needs to know who they're watching.
+- **`inciting`** — the disruption arrives. Something specific changes — a stranger appears, an object is found, an alarm goes off, the world breaks. Camera pushes IN on the change. This is usually segment 1's hook moment in a 4-segment video.
+- **`rising`** — the protagonist responds and the obstacle escalates. Multi-action segments. Camera kinetic. This is where chase / fight / discovery escalation goes.
+- **`climax`** — the peak action / decision / VFX moment. Maximum visual density. The thing the trailer would cut to.
+- **`resolution`** — aftermath / consequence / new equilibrium. Calmer, anchored on character reaction. The viewer needs to see what the climax MEANT.
+
+Common 4-segment arcs:
+- `setup` → `inciting` → `rising` → `climax` (resolution rolled into climax) — works when the climax is also the resolving moment
+- `inciting` → `rising` → `climax` → `resolution` — when you skip standalone setup and let the inciting moment carry world-establishment too (this is what most viral 1-min shorts do)
+- `setup` → `inciting` → `climax` → `resolution` — for slower, more contemplative pieces
+
+Pick the one that fits the story. If the idea calls for 3 or 5 segments, scale accordingly.
+
+The hookMoment lives in segment 1 regardless of which function it has — it's the opening shot, not a separate beat.
 
 ## Character description style (CRITICAL for cross-segment consistency)
 
@@ -132,6 +151,33 @@ A single global look that every segment shares — so all clips feel like one fi
 
 Pick ONE coherent style. For fast-paced video, motion philosophy should usually favour kinetic / handheld / dynamic over locked-off / contemplative.
 
+## Narration script (CRITICAL for story comprehension)
+
+Pure visual storytelling cannot communicate plot in 60 seconds with multiple cuts. The polish stage adds **TTS voiceover** mixed over the video to carry the story exposition. You write the script here.
+
+The `narrationScript` is one continuous block of text, **paced to the total video duration**. Pacing rule: ~2 words per second of video. So:
+- 60s video → 100–130 words
+- 45s video → 75–95 words
+- 30s video → 50–65 words
+
+The script's job:
+- **First 3 seconds**: establish WHO the protagonist is and WHAT they want. ("In neon-soaked Tokyo, courier Mika has 60 seconds to deliver a package that bends time.")
+- **Middle**: carry the rising action and stakes. ("She runs. The cube ticks. Anyone who catches her gets erased.")
+- **Last 5–8s**: pay off the climax and land the meaning. ("She makes the drop. Time resumes. Mika has saved the city — and the package was sent by herself, from one minute in the future.")
+
+Style guidelines:
+- Punchy, present-tense, declarative. Short sentences. Active voice.
+- Don't describe what's already obvious on screen ("she runs through an alley") — describe what only narration can tell us (her motivation, the stakes, the hidden meaning).
+- Reference the protagonist by name once or twice. Reference the antagonist by role ("the enforcer") not name unless the role is unclear.
+- Conversational tone, not overwrought. Trust the audience.
+- Include 1 short exclamatory or rhetorical beat to keep energy.
+- End with a sting line — something the viewer will remember and that completes the meaning.
+
+Example for the cyberpunk samurai brief (15s × 4 = 60s, ~115 words):
+> "Tokyo, 2087. Memory has a price — and Mika just stole it. The crystal in her palm holds a stranger's life, fifteen lifetimes of love and loss compressed into a heartbeat. Director Saito wants it back. His enforcers do too. So she runs. Through holographic walls she carves with plasma. Down corridors where gravity itself is a weapon. Up to the rooftop where the memory wakes — and turns out to be hers. The childhood Saito erased. The face she's been chasing without knowing why. She holds it for one breath. Then she lets it go. The city resumes. And Mika, finally, is whole."
+
+**Required.** This is the single most important field for making the video coherent.
+
 ## Audio bible (applied to EVERY segment)
 
 A single global sound design that every segment shares — so audio doesn't reset per clip:
@@ -151,6 +197,8 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
 {
   "title": "...",
   "logline": "one-sentence summary of the whole video",
+  "titleCard": "60 SECONDS TO SHIBUYA ZERO",
+  "narrationScript": "100-130 word continuous voiceover script for 60s video. Carries who/what/why/stakes/payoff. See section above for style. THIS IS REQUIRED.",
   "hookMoment": "one specific 3–5s opening shot that stops the scroll. Concrete physical event. Connects to the story. Lean toward VFX/spectacle when the story allows.",
   "spectacleHints": [
     "Segment 1: cyan time-freeze ripple expands from the cube — every raindrop, scooter, pedestrian halts mid-motion except Mika.",
@@ -159,9 +207,10 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
     "Segment 4: the cube detonates outward in a controlled bloom of cyan particles that reform Shibuya scene-by-scene as time resumes."
   ],
   "storyBeats": [
-    "Segment 1 beat — must incorporate the hookMoment.",
-    "Segment 2 beat — ...",
-    "..."
+    { "function": "inciting", "description": "The chrono-cube erupts from Mika's bag, freezing Shibuya, and forces her to accept a 60-second delivery countdown.", "locationCard": "SHIBUYA • 02:14 AM" },
+    { "function": "rising",   "description": "Mika sprints through a neon service alley as time glitches and a black enforcer hunts the cube.", "locationCard": "SERVICE ALLEY — 47s LEFT" },
+    { "function": "climax",   "description": "Rooftop sprint as the countdown turns critical; the package's purpose becomes clear.", "locationCard": "ROOFTOP — 12s LEFT" },
+    { "function": "resolution","description": "Hand-off at the clock-tower shrine; the city unfreezes; the twist lands.", "locationCard": "CLOCK TOWER • DAWN" }
   ],
   "characters": [
     { "name": "alex", "description": "28yo white American man, fair skin with light tan, blue-grey eyes, dark brown short tousled hair, clean-shaven; navy crewneck over white tee, slim charcoal jeans, brown leather Chelsea boots; small silver chain at neckline, slight forward-lean posture." }
@@ -188,9 +237,31 @@ Return JSON only — no commentary, no fences, no markdown. EXACT shape:
 }
 ```
 
+## Location cards (on-screen text orientation)
+
+The polish stage burns a short text overlay onto the bottom-left of each segment for ~3 seconds at the start. This is what orients the viewer between cuts ("PENTHOUSE — FLOOR 87" / "60 SECONDS LEFT" / "SERVICE ALLEY • 47s"). It's lightweight — 1–4 words — but enormously important for comprehension across segments.
+
+Each `storyBeats[i]` entry has an optional `locationCard` field. Use ALL CAPS or numeric stamps. Format ideas:
+- `LOCATION • TIME` — `"TOKYO • 02:14 AM"`, `"PENTHOUSE — FLOOR 87"`
+- Countdown `LOCATION — Ns LEFT` — `"ROOFTOP — 12s LEFT"`, `"VAULT • 04:59 LEFT"`
+- Pure location for setup beats — `"SHIBUYA SCRAMBLE"`, `"SAITO TOWER"`
+- Pure stakes for climax beats — `"KILL ZONE"`, `"ZERO"`
+
+The optional project-level `titleCard` (e.g. `"60 SECONDS TO SHIBUYA ZERO"`) replaces segment 1's `locationCard` for the opening — it's the title that introduces the whole piece.
+
+Skip a segment's `locationCard` (set to null/missing) only when the story is in one continuous location and a card would be redundant. For multi-location videos every segment should have one.
+
+## Output
+
+Return JSON only — no commentary, no fences, no markdown. EXACT shape:
+
+(see the JSON example above for the full structure including narrationScript, titleCard, storyBeats with function+description+locationCard, etc.)
+
 Hard rules:
 - No commentary outside the JSON. No markdown fences.
 - Every name (character / setting / prop) is short kebab-case — these become `@<name>` references in the segment prompts and the upload filenames must match exactly.
 - Story beats array length MUST equal the number of segments you intend to plan in pass 2.
 - `hookMoment` is REQUIRED, never empty, never abstract.
+- `narrationScript` is REQUIRED — without it the video is incomprehensible. Pace ~2 words per second of total video duration.
+- Each storyBeats entry MUST have a `function` field (one of setup/inciting/rising/climax/resolution).
 - Be DETAILED on character descriptions. Vague = drift across segments.

@@ -6,18 +6,27 @@ import {
   MAX_PROMPT_CHARS,
   type Aspect,
   type AudioBible,
+  type BeatFunction,
   type Manifest,
   type Model,
   type Resolution,
   type StyleBible
 } from "../types.js";
 
+interface OutlineRawBeat {
+  function: BeatFunction;
+  description: string;
+  locationCard?: string | null;
+}
+
 interface OutlineRaw {
   title: string;
   logline: string;
+  titleCard?: string;
+  narrationScript: string;
   hookMoment: string;
   spectacleHints?: string[];
-  storyBeats: string[];
+  storyBeats: OutlineRawBeat[] | string[];   // legacy string[] tolerated
   characters: Array<{ name: string; description: string }>;
   settings: Array<{ name: string; description: string }>;
   props?: Array<{ name: string; description: string }>;
@@ -32,6 +41,8 @@ interface SegmentsRaw {
     duration: number;
     refs: string[];
     firstFrameDescription: string;
+    beatFunction?: BeatFunction;
+    locationCard?: string | null;
   }>;
 }
 
@@ -54,11 +65,21 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
 
   // ---- PASS 1: Outline ----
   const outline = await passOutline(manifest, options, cwd);
+  // Normalize storyBeats — accept both modern object form and legacy string[].
+  // Internal manifest stores beats as descriptions only; the function +
+  // locationCard get pushed onto each Segment object during pass 2 mapping.
+  const normalizedBeats: OutlineRawBeat[] = Array.isArray(outline.storyBeats) && outline.storyBeats.length > 0
+    ? typeof outline.storyBeats[0] === "string"
+      ? (outline.storyBeats as string[]).map((d) => ({ function: "rising", description: d }))
+      : (outline.storyBeats as OutlineRawBeat[])
+    : [];
   manifest.title = outline.title;
   manifest.logline = outline.logline;
+  manifest.titleCard = outline.titleCard;
+  manifest.narrationScript = outline.narrationScript;
   manifest.hookMoment = outline.hookMoment;
   manifest.spectacleHints = outline.spectacleHints ?? [];
-  manifest.storyBeats = outline.storyBeats;
+  manifest.storyBeats = normalizedBeats.map((b) => b.description);
   manifest.characters = outline.characters.map((c) => ({ name: kebab(c.name), description: c.description }));
   manifest.settings = outline.settings.map((s) => ({ name: kebab(s.name), description: s.description }));
   manifest.props = (outline.props ?? []).map((p) => ({ name: kebab(p.name), description: p.description }));
@@ -66,9 +87,13 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
   manifest.audio = outline.audio;
   saveManifest(manifest, cwd);
   options.log(
-    `[ideate] outline: ${manifest.characters.length} char(s), ${manifest.settings.length} setting(s), ${manifest.props.length} prop(s), ${manifest.storyBeats.length} beat(s), ${manifest.spectacleHints?.length ?? 0} spectacle hint(s)`
+    `[ideate] outline: ${manifest.characters.length} char(s), ${manifest.settings.length} setting(s), ${manifest.props.length} prop(s), ${normalizedBeats.length} beat(s), ${manifest.spectacleHints?.length ?? 0} spectacle hint(s)`
   );
   options.log(`[ideate] hook: ${manifest.hookMoment}`);
+  options.log(`[ideate] narration: ${manifest.narrationScript ? `${manifest.narrationScript.length} chars / ~${manifest.narrationScript.split(/\s+/).length} words` : "(MISSING)"}`);
+  for (const beat of normalizedBeats) {
+    options.log(`[ideate] beat: [${beat.function}] ${beat.description}${beat.locationCard ? ` (card: ${beat.locationCard})` : ""}`);
+  }
   for (const hint of manifest.spectacleHints ?? []) {
     options.log(`[ideate] spectacle: ${hint}`);
   }
@@ -93,6 +118,16 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
         "This indicates the model produced a base prompt that's too long even after retries — please re-run ideate."
       );
     }
+    // Pass 2 should echo beatFunction + locationCard from the outline; fall
+    // back to the outline's storyBeats[i] if pass 2 omitted them.
+    const fallbackBeat = normalizedBeats[i];
+    const beatFunction = s.beatFunction ?? fallbackBeat?.function;
+    const locationCardRaw = s.locationCard ?? fallbackBeat?.locationCard;
+    const locationCard = locationCardRaw === null ? undefined : (locationCardRaw || undefined);
+    // For segment 0, the project-level titleCard overrides the per-segment
+    // card so the opening reads as the video's title (e.g. "60 SECONDS TO
+    // SHIBUYA ZERO" instead of just "SHIBUYA • 02:14 AM").
+    const effectiveCard = i === 0 && manifest.titleCard ? manifest.titleCard : locationCard;
     return {
       name: s.name ? kebab(s.name) : `seg-${String(i + 1).padStart(2, "0")}`,
       prompt: finalPrompt,
@@ -102,7 +137,9 @@ export async function runIdeate(manifest: Manifest, options: IdeateOptions): Pro
       resolution: manifest.defaults.resolution as Resolution,
       upscale: manifest.defaults.upscale,
       refs,
-      firstFrameDescription: s.firstFrameDescription.trim()
+      firstFrameDescription: s.firstFrameDescription.trim(),
+      beatFunction,
+      locationCard: effectiveCard
     };
   });
 
@@ -136,8 +173,26 @@ function validateOutline(parsed: OutlineRaw): void {
   if (!parsed.hookMoment || parsed.hookMoment.trim().length < 20) {
     throw new Error("[ideate] outline missing hookMoment (or too short to be a real hook)");
   }
+  if (!parsed.narrationScript || parsed.narrationScript.trim().length < 80) {
+    throw new Error(
+      "[ideate] outline missing narrationScript (or too short — needs ~2 words/second of total video duration). " +
+      "This is what makes the video comprehensible; required."
+    );
+  }
   if (!Array.isArray(parsed.storyBeats) || parsed.storyBeats.length === 0) {
     throw new Error("[ideate] outline missing storyBeats");
+  }
+  // If beats are objects, require function tag on each.
+  if (typeof parsed.storyBeats[0] === "object") {
+    const beats = parsed.storyBeats as OutlineRawBeat[];
+    const validFns: BeatFunction[] = ["setup", "inciting", "rising", "climax", "resolution"];
+    for (let i = 0; i < beats.length; i++) {
+      const b = beats[i];
+      if (!b.description) throw new Error(`[ideate] storyBeats[${i}] missing description`);
+      if (!validFns.includes(b.function)) {
+        throw new Error(`[ideate] storyBeats[${i}].function must be one of ${validFns.join("/")} — got "${b.function}"`);
+      }
+    }
   }
   if (!Array.isArray(parsed.characters)) throw new Error("[ideate] outline missing characters[]");
   if (!Array.isArray(parsed.settings)) throw new Error("[ideate] outline missing settings[]");
@@ -307,6 +362,15 @@ function clampDuration(value: number): number {
 
 function buildScriptMarkdown(manifest: Manifest): string {
   const lines = [`# ${manifest.title}`, "", manifest.logline, ""];
+  if (manifest.titleCard) {
+    lines.push(`**Title card (segment 1):** ${manifest.titleCard}`, "");
+  }
+  if (manifest.narrationScript) {
+    const wordCount = manifest.narrationScript.split(/\s+/).length;
+    lines.push(`## Narration script (~${wordCount} words, TTS via edge-tts)`, "");
+    lines.push(`> ${manifest.narrationScript}`);
+    lines.push("");
+  }
   if (manifest.hookMoment) {
     lines.push("## Opening hook (first 3-5s of segment 1)", "");
     lines.push(`> ${manifest.hookMoment}`);
@@ -349,7 +413,13 @@ function buildScriptMarkdown(manifest: Manifest): string {
   }
   lines.push("", "## Segments", "");
   for (const seg of manifest.segments) {
-    lines.push(`### ${seg.name} (${seg.duration}s, refs: ${seg.refs.join(", ") || "none"}, prompt ${seg.prompt.length} chars)`);
+    const tags: string[] = [];
+    if (seg.beatFunction) tags.push(`beat: **${seg.beatFunction}**`);
+    if (seg.locationCard) tags.push(`card: \`${seg.locationCard}\``);
+    tags.push(`${seg.duration}s`);
+    tags.push(`refs: ${seg.refs.join(", ") || "none"}`);
+    tags.push(`prompt ${seg.prompt.length} chars`);
+    lines.push(`### ${seg.name} (${tags.join(" • ")})`);
     lines.push("");
     lines.push("```");
     lines.push(seg.prompt);
